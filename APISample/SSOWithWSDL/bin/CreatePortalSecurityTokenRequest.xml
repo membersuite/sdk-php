@@ -1,0 +1,19 @@
+﻿<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Header>
+    <Action>http://membersuite.com/contracts/IConciergeAPIService/CreatePortalSecurityToken</Action>
+    <To></To>
+    <ConciergeRequestHeader xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://membersuite.com/schemas">
+      <SessionId i:nil="true" />
+      <AccessKeyId></AccessKeyId>
+      <AssociationId></AssociationId>
+      <Signature></Signature>
+    </ConciergeRequestHeader>
+  </s:Header>
+  <s:Body>
+    <CreatePortalSecurityToken xmlns="http://membersuite.com/contracts">
+      <portalUserName></portalUserName>
+      <signingCertificateId></signingCertificateId>
+      <signature></signature>
+    </CreatePortalSecurityToken>
+  </s:Body>
+</s:Envelope>
