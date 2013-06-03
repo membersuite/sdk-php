@@ -467,13 +467,13 @@ public function __construct(){
 	// Create API Request Headers
 	$apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method = 'GenerateInsertionOrderInvoices',$accesskey,$associationid,$secreteaccessid);
 	// Construct Body
-	
+	$search = $this->api->createsearch($searchToUse);
 	$body = '<s:Body>
 	<GenerateInsertionOrderInvoices xmlns="http://membersuite.com/contracts">
 	<issueId>'.$issueId.'</issueId>
 	<batchName>'.$batchName.'</batchName>
 	<invoiceTermsId>'.$invoiceTermsId.'</invoiceTermsId>
-	<searchToUse>'.$searchToUse.'</searchToUse>
+	<searchToUse>'.$search.'</searchToUse>
 	<automaticallyEmailInvoices>'.$automaticallyEmailInvoices.'</automaticallyEmailInvoices>
 	<jobStatusNotificationEmail>'.$jobStatusNotificationEmail.'</jobStatusNotificationEmail>
 	</GenerateInsertionOrderInvoices>
@@ -497,18 +497,27 @@ public function __construct(){
 	$apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method = 'FulfillSubscriptions',$accesskey,$associationid,$secreteaccessid);
 	// Construct Body
 	$search = '';
+        if($jobManifest->SubscriptionSearchToUseForFulfillment)
+        {
         $searchobject = $jobManifest->SubscriptionSearchToUseForFulfillment;
         
         $search = $this->api->createsearch($searchobject);
+        }
+        $search1='';
         
+        if($jobManifest->MembershipSearchToUseForFulfillment)
+        {
+        $searchobject1 = $jobManifest->MembershipSearchToUseForFulfillment;
         
+        $search1 = $this->api->createsearch($searchobject1);
+        }
 	$body = '<s:Body>
 	<FulfillSubscriptions xmlns="http://membersuite.com/contracts">
         <jobManifest xmlns:c="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Jobs">
 	<c:BatchName>'.$jobManifest->BatchName.'</c:BatchName>
         <c:IssueID>'.$jobManifest->IssueID.'</c:IssueID>
 	<c:SubscriptionSearchToUseForFulfillment>'.$search.'</c:SubscriptionSearchToUseForFulfillment>
-        <c:MembershipSearchToUseForFulfillment>'.$search.'</c:MembershipSearchToUseForFulfillment>
+        <c:MembershipSearchToUseForFulfillment>'.$search1.'</c:MembershipSearchToUseForFulfillment>
         </jobManifest>
 	</FulfillSubscriptions>
 	</s:Body>';
@@ -533,9 +542,11 @@ public function __construct(){
 	$search = '';
         $criteria='';
         $grouptype='';
+        if($jobManifest->SubscriptionSearchToUseForRenewal)
+        {
         $searchobject = $jobManifest->SubscriptionSearchToUseForRenewal;
         $search = $this->api->createsearch($searchobject);
-        
+        }
 	$body = '<s:Body>
 	<RenewSubscriptions xmlns="http://membersuite.com/contracts">
         <jobManifest xmlns="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Jobs">
@@ -544,7 +555,7 @@ public function __construct(){
 	<BatchName>'.$jobManifest->BatchName.'</BatchName>
 	<SendOutEmails>'.$jobManifest->SendOutEmails.'</SendOutEmails>
         </jobManifest>
-	</RenewSubscriptions>
+        </RenewSubscriptions>
 	</s:Body>';
 	// Replace strings
 	$apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);

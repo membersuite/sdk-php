@@ -76,10 +76,18 @@ class Concierge{
    $xml = simplexml_load_string($string);
    $json = json_encode($xml);
    $responseObject = json_decode($json,False);
+   
+   if(isset($responseObject->sBody->sFault->faultstring))
+   {
+    return $responseObject->sBody->sFault->faultstring;
+   }
+   else
+   {
    $response = $method.'Response';
    $gvresponse = $method.'Result';
    
    return $responseObject->sBody->$response->$gvresponse;
+   }
   }
   
   

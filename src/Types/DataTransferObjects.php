@@ -249,69 +249,69 @@ class msIndividual extends msEntity
   }
   else
   $data = "";
-  if($data['FirstName'])
+  if(isset($data['FirstName']))
   {
    $this->FirstName =$data['FirstName'];
   }
   
-  if($data['LastName'])
+  if(isset($data['LastName']))
   {
    $this->LastName =$data['LastName'];
   }
-  if($data['EmailAddress'])
+  if(isset($data['EmailAddress']))
   {
    $this->EmailAddress =$data['EmailAddress'];
   }
-  if($data['PasswordHash'])
+  if(isset($data['PasswordHash']))
   {
    $this->PasswordHash =$data['PasswordHash'];
   }
-  if($data['Department'])
+  if(isset($data['Department']))
   {
    $this->Department =$data['Department'];
   }
-  if($data['IsSuspended'])
+  if(isset($data['IsSuspended']))
   {
    $this->IsSuspended =$data['IsSuspended'];
   }
-  if($data['IsSuperUser'])
+  if(isset($data['IsSuperUser']))
   {
    $this->IsSuperUser =$data['IsSuperUser'];
   }
-  if($data['TimeZone'])
+  if(isset($data['TimeZone']))
   {
    $this->TimeZone =$data['TimeZone'];
   }
   
-  if($data['PhoneNumber'])
+  if(isset($data['PhoneNumber']))
   {
    $this->PhoneNumber =$data['PhoneNumber'];
   }
-  if($data['Notes'])
+  if(isset($data['Notes']))
   {
    $this->Notes =$data['Notes'];
   }
-  if($data['SecurityQuestion'])
+  if(isset($data['SecurityQuestion']))
   {
    $this->SecurityQuestion =$data['SecurityQuestion'];
   }
-  if($data['SecurityAnswer'])
+  if(isset($data['SecurityAnswer']))
   {
    $this->SecurityAnswer =$data['SecurityAnswer'];
   }
-  if($data['MustChangePassword'])
+  if(isset($data['MustChangePassword']))
   {
    $this->MustChangePassword =$data['MustChangePassword'];
   }
-  if($data['ID'])
+  if(isset($data['ID']))
   {
    $this->ID =$data['ID'];
   }
-  if($data['SystemTimestamp'])
+  if(isset($data['SystemTimestamp']))
   {
    $this->SystemTimestamp = $data['SystemTimestamp'];
   }
-  if($data['Name'])
+  if(isset($data['Name']))
   {
    $this->Name = $data['Name'];
   }
@@ -636,8 +636,8 @@ class msIndividual extends msEntity
   var $RestrictAccess = "RestrictAccess";
   var $SecurityRoles = "SecurityRoles";
   var $UserGroups = "UserGroups";
-  var $SecurityLock = "SecurityLock";
-  var $LocalID = "LocalID";
+  var $LocalID = 'LocalID';
+  var $SecurityLock = 'SecurityLock';
   
  }
  
@@ -1076,6 +1076,33 @@ class msIndividual extends msEntity
   
  }
  
+ class msInventoryAdjustment extends msInventoryTransaction
+ {
+  var $CLASS_NAME = "InventoryAdjustment";
+  var $ClassType = "InventoryAdjustment";
+ }
+ 
+ class msOrderRelatedInventoryTransaction extends msInventoryTransaction
+ {
+  var $CLASS_NAME = "OrderRelatedInventoryTransaction";
+  var $ClassType = "OrderRelatedInventoryTransaction";
+  var $Order = "Order";
+  var $OrderLineItemID = "OrderLineItemID";
+  
+ }
+ 
+ class msInventoryBackorder extends msOrderRelatedInventoryTransaction
+ {
+  var $CLASS_NAME = "InventoryBackorder";
+  var $ClassType = "InventoryBackorder";
+ }
+ 
+ class msInventoryReservation extends msInventoryTransaction
+ {
+  var $CLASS_NAME = "InventoryReservation";
+  var $ClassType = "InventoryReservation";
+ }
+ 
  class msExpiringProduct extends msProduct
  {
   var $CLASS_NAME = "ExpiringProduct";
@@ -1198,7 +1225,7 @@ class msIndividual extends msEntity
   var $Amount = "Amount";
  }
  
- class msRevenueRecognitionSchedule extends msAggregate
+ class msRevenueRecognitionSchedule extends msFinancialSchedule
  {
   var $CLASS_NAME = "RevenueRecognitionSchedule";
   var $ClassType = "RevenueRecognitionSchedule";
@@ -1206,10 +1233,10 @@ class msIndividual extends msEntity
   var $BusinessUnit = "BusinessUnit";
   var $Invoice = "Invoice";
   var $InvoiceLineItemID = "InvoiceLineItemID";
-  var $IsSuspended = "IsSuspended";
+ 
  }
  
- class msBillingSchedule extends msAggregate
+ class msBillingSchedule extends msFinancialSchedule
  {
   var $CLASS_NAME = "BillingSchedule";
   var $ClassType = "BillingSchedule";
@@ -1343,6 +1370,29 @@ class msIndividual extends msEntity
   var $CancellationDate = "CancellationDate";
   var $CancellationReason = "CancellationReason";
   var $Group;
+ }
+ 
+ class msCertification extends msAggregate
+ {
+  var $ClassType = 'Certification';
+  var $Certificant = "Certificant";
+  var $Program = "Program";
+  var $Status = "Status";
+  var $StatusReason = "StatusReason";
+  var $Certified = "Certified";
+  var $RequirementsMet = "RequirementsMet";
+  var $PaidThruDate = "PaidThruDate";
+  var $RecertificationDate = "RecertificationDate";
+  var $CertificationDate = "CertificationDate";
+  var $ApplicationDate = "ApplicationDate";
+  var $EffectiveDate = "EffectiveDate";
+  var $ExpirationDate = "ExpirationDate";
+  var $CertificateSentDate = "CertificateSentDate";
+  var $EnrollmentDate = "EnrollmentDate";
+  var $TerminationDate = "TerminationDate";
+  var $Notes = "Notes";
+  var $CEUGracePeriod = "CEUGracePeriod";
+  
  }
  
  class msCertificationProgram extends msAggregate
@@ -1512,6 +1562,15 @@ class msIndividual extends msEntity
   var $Search = "Search";
   
  }
+ 
+ class msFinancialSchedule extends msAggregate
+ {
+  var $CLASS_NAME = "FinancialSchedule";
+  var $ClassType = "FinancialSchedule";
+  var $IsSuspended = "IsSuspended";
+  var $SecurityLock = "SecurityLock";
+ }
+ 
  
  class msFinancialScheduleEntry
  {
@@ -1904,6 +1963,110 @@ class msIndividual extends msEntity
   var $ClassType = "ReturnReason";
  }
  
+ class DuplicateField
+ {
+  var $Name;
+  var $DuplicateDetectionMatchMode;//0,1,2
+  
+ }
  
+ class msAssociationConfigurationContainer extends msAggregate
+ {
+  var $CLASS_NAME = "AssociationConfigurationContainer";
+  var $ClassType = "AssociationConfigurationContainer";
+  var $ConfigurationValues = "ConfigurationValues";
+  var $DisplayAddress = "DisplayAddress";
+  var $EnableApiAccess = "EnableApiAccess";
+  var $Mode = "Mode";
+  var $Acronym = "Acronym";
+  var $Address = "Address";
+  var $Logo = "Logo";
+  var $WriteOffMethod = "WriteOffMethod";
+  var $AccountingMethod = "AccountingMethod";
+  var $FinancialSoftwarePackage = "FinancialSoftwarePackage";
+  var $BatchDownloadMethod = "BatchDownloadMethod";
+  var $InvoiceReport = "InvoiceReport";
+  var $PaymentReceiptReport = "PaymentReceiptReport";
+  var $OrderReceiptReport = "OrderReceiptReport";
+  var $VerifyControlValuesWhenPostingBatches = "VerifyControlValuesWhenPostingBatches";
+  var $PortalHeaderGraphic = "PortalHeaderGraphic";
+  var $PortalSkin = "PortalSkin";
+  var $PortalLoginScreenText = "PortalLoginScreenText";
+  var $PortalDisplayBecomeMember = "PortalDisplayBecomeMember";
+  var $PortalDisplayMakeDonation = "PortalDisplayMakeDonation";
+  var $PortalAdditionalLinks = "PortalAdditionalLinks";
+  var $ShowUpcomingEventsTabInPortal = "ShowUpcomingEventsTabInPortal";
+  var $SendEmailWhenUserUpdatesInformation = "SendEmailWhenUserUpdatesInformation";
+  var $PortalDisplayCreateUserAccount = "PortalDisplayCreateUserAccount";
+  var $AssociationHomePageUrl = "AssociationHomePageUrl";
+  var $MembershipDirectoryEnabled = "MembershipDirectoryEnabled";
+  var $MembershipDirectoryForMembersOnly = "MembershipDirectoryForMembersOnly";
+  var $MembershipDirectorySearchFields = "MembershipDirectorySearchFields";
+  var $MembershipDirectoryTabularResultsFields = "MembershipDirectoryTabularResultsFields";
+  var $MembershipDirectoryDetailsFields = "MembershipDirectoryDetailsFields";
+  var $PickListReport = "PickListReport";
+  var $PackingListReport = "PackingListReport";
+  var $OnlineStorefrontEnabled = "OnlineStorefrontEnabled";
+  var $IsVerticalResponseEnabled = "IsVerticalResponseEnabled";
+  var $VerticalResponseUserName = "VerticalResponseUserName";
+  var $CEUSelfReportingMode = "CEUSelfReportingMode";
+  var $ComponentSelfReportingMode = "ComponentSelfReportingMode";
+  var $ShowCertificationsInPortal = "ShowCertificationsInPortal";
+  var $ShowComponentRegistrationsInPortal = "ShowComponentRegistrationsInPortal";
+  var $ShowCEUCreditsInPortal = "ShowCEUCreditsInPortal";
+  var $DefaultJobPostingExpiration = "DefaultJobPostingExpiration";
+  var $JobPostingAccessMode = "JobPostingAccessMode";
+  var $ResumeSearchFields = "ResumeSearchFields";
+  var $ResumeTabularResultsFields = "ResumeTabularResultsFields";
+  var $ResumeDetailsFields = "ResumeDetailsFields";
+  var $CompetitionEntryDraftStatus = "CompetitionEntryDraftStatus";
+  var $CompetitionEntryPendingPaymentStatus = "CompetitionEntryPendingPaymentStatus";
+  var $CompetitionEntrySubmittedStatus = "CompetitionEntrySubmittedStatus";
+  var $DisableDuplicateCheckConsole = "DisableDuplicateCheckConsole";
+  var $DisableDuplicateCheckPortal = "DisableDuplicateCheckPortal";
+  var $PortalCSS = "PortalCSS";
+  var $PortalLoginScreenTitle = "PortalLoginScreenTitle";
+  var $PortalHideDropShadow = "PortalHideDropShadow";
+  var $UseDropDownsForStatesAndCountries = "UseDropDownsForStatesAndCountries";
+  var $ReorderPointNoficationEmail = "ReorderPointNoficationEmail";
+  
+ }
+ 
+ class ReportManifest
+ {
+  var $ReportSpecificationName;
+  
+ }
+ 
+ class msCatalogAggregate extends msAggregate
+ {
+  var $CLASS_NAME = "CatalogAggregate";
+  var $ClassType = "CatalogAggregate";
+ }
+ 
+ class msCustomerDomainObject extends msCatalogAggregate
+ {
+  var $CLASS_NAME = "CustomerDomainObject";
+  var $ClassType = "CustomerDomainObject";
+  var $Customer = "Customer";
+ }
+ 
+ class msAssociation extends msCustomerDomainObject
+ {
+  var $CLASS_NAME = "Association";
+  var $ClassType = "Association";
+  var $Acronym = "Acronym";
+  var $DatabaseServer = "DatabaseServer";
+  var $BaseCurrency = "BaseCurrency";
+  var $PortalSelfHostUri = "PortalSelfHostUri";
+  var $PortalDisabled = "PortalDisabled";
+  var $PartitionKey = "PartitionKey";
+  var $FiscalYearEnd = "FiscalYearEnd";
+  var $Mode = "Mode";
+  var $Status = "Status";
+  var $EnableApiAccess = "EnableApiAccess";
+  var $TrialEndDate = "TrialEndDate";
+  var $BillingId = "BillingId";
+ }
  
 ?>

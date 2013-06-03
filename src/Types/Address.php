@@ -39,3 +39,43 @@ class EmailTemplate
       var $TextBody;
       var $ReplyTo;
 }
+
+class ClassMetadataOverride
+{
+    var $Name;
+    var $Module;
+    var $Createable;
+    var $Updateable;
+    var $Deletable;
+    var $Label;
+    var $LabelPlural;
+    var $IsAbstract;
+    var $IsSecurable;
+    var $Fields;// list of fields
+    var $ValidationRules;// list validation rules
+    var $FieldCalculationRules;// list of calculation rules
+}
+
+class ValidationRule
+{
+    var $Name;
+    var $Expression;
+    var $ErrorMessage;
+    var $IsActive;
+}
+
+class FieldCalculationRule
+{
+    var $Name;
+    var $IsActive;
+    var $TargetField;
+    var $EvaluationOrder;
+    var $Expression;
+    var $Criteria;
+    var $SkipIfTargetFieldIsSet;
+    var $RunOnNewRecordsOnly;
+    var $Notes;
+    
+}
+
+?>

@@ -30,8 +30,8 @@ class Event extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <GetApplicableRegistrationFees xmlns="http://membersuite.com/contracts">
-                    <eventID>'.$targetID.'</eventID>
-                    <entityID>'.$targetID.'</entityID>
+                    <eventID>'.$eventID.'</eventID>
+                    <entityID>'.$entityID.'</entityID>
                     </GetApplicableRegistrationFees>
                     </s:Body>
                     ';
@@ -59,8 +59,8 @@ class Event extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <GetEventManifest xmlns="http://membersuite.com/contracts">
-                    <eventID>'.$targetID.'</eventID>
-                    <entityID>'.$targetID.'</entityID>
+                    <eventID>'.$eventID.'</eventID>
+                    <entityID>'.$entityID.'</entityID>
                     <registrationFeeID>'.$registrationFeeID.'</registrationFeeID>
                     </GetEventManifest>
                     </s:Body>

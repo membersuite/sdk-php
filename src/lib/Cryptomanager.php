@@ -14,8 +14,9 @@ class CryptoManager{
         $xmlrsa->loadKeyfromXML($rsaXML);
         $signature = $xmlrsa->sign($portalUsername);
         
-        return base64_encode($signature);*/
-
+        return base64_encode($signature);
+       */
+       return 'Use phpseclib to generate digital signature';
     }    
    
    public static function GenerateMessageSignature($method, $SecretAccessKey, $AssociationId, $SessionId = ""){

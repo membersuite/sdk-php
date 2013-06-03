@@ -86,7 +86,7 @@ class Portal extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <CheckEntitlement xmlns="http://membersuite.com/contracts">
-                    <type>'.$formID.'</type>
+                    <type>'.$type.'</type>
                     <entityID>'.$entityID.'</entityID>
                     <context>'.$context.'</context>
                     </CheckEntitlement>
@@ -220,6 +220,18 @@ class Portal extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='ConvertLead',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     
+     
+     $activity = '';
+     foreach($msoFollowUpActivity as $key=>$value){
+       if($key<>'ClassType'){ 
+      $activity.= '<mem:FieldMetadata>
+        <mem:Name>'.$key.'</mem:Name>
+        <mem:Value>'.$value.'</mem:Value>
+        </mem:FieldMetadata>';  
+       }
+      }
+     
       $body = '<s:Body>
                     <ConvertLead xmlns="http://membersuite.com/contracts">
                     <leadID>'.$leadID.'</leadID>
@@ -229,7 +241,12 @@ class Portal extends Concierge{
                     <createIndividualRecord>'.$createIndividualRecord.'</createIndividualRecord>
                     <relationshipTypeID>'.$relationshipTypeID.'</relationshipTypeID>
                     <opportunityNameOrID>'.$opportunityNameOrID.'</opportunityNameOrID>
-                    <msoFollowUpActivity>'.$msoFollowUpActivity.'</msoFollowUpActivity>
+                    <msoFollowUpActivity>
+                    <mem:ClassType>'.$msoFollowUpActivity->ClassType.'</mem:ClassType>
+                    <mem:Fields>
+                    '.$activity.'
+                    </mem:Fields>
+                    </msoFollowUpActivity>
                     </ConvertLead>
                     </s:Body>
                     ';
@@ -274,10 +291,23 @@ class Portal extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='ProvisionAssociation',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $association = '';
+     foreach($msoAssociation as $key=>$value){
+       if($key<>'ClassType'){ 
+      $association.= '<mem:FieldMetadata>
+        <mem:Name>'.$key.'</mem:Name>
+        <mem:Value>'.$value.'</mem:Value>
+        </mem:FieldMetadata>';  
+       }
+      }
       $body = '<s:Body>
                     <ProvisionAssociation xmlns="http://membersuite.com/contracts">
                     <sourceAssociationID>'.$sourceAssociationID.'</sourceAssociationID>
-                    <msoAssociation>'.$msoAssociation.'</msoAssociation>
+                    <msoAssociation><mem:ClassType>'.$msoAssociation->ClassType.'</mem:ClassType>
+                    <mem:Fields>
+                    '.$association.'
+                    </mem:Fields>
+                    </msoAssociation>
                     <confirmationEmail>'.$confirmationEmail.'</confirmationEmail>
                     <includeData>'.$includeData.'</includeData>
                     </ProvisionAssociation>
@@ -522,7 +552,7 @@ class Portal extends Concierge{
       $body = '<s:Body>
                     <RenderReport xmlns="http://membersuite.com/contracts">
                     <manifest xmlns:d="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Manifests.Reporting">
-                    <d:ReportSpecificationName>'.$manifest.'</d:ReportSpecificationName>
+                    <d:ReportSpecificationName>'.$manifest->ReportSpecificationName.'</d:ReportSpecificationName>
                     </manifest>
                     </RenderReport>
                     </s:Body>
@@ -581,10 +611,15 @@ class Portal extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='GetKPIs',$accesskey,$associationid,$secreteaccessid);
      
       // Construct Body
+     $kpi='';
+     foreach($kpisToRun as $kpisToRun)
+     {
+      $kpi.='<Name>'.$kpisToRun.'</Name>';
+     }
       $body = '<s:Body>
                     <GetKPIs xmlns="http://membersuite.com/contracts">
                     <kpisToRun>
-                    <Name>'.$kpisToRun.'</Name>
+                    '.$kpi.'
                     </kpisToRun>
                     </GetKPIs>
                     </s:Body>

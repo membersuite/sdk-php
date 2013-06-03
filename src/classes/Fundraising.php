@@ -109,7 +109,7 @@ class Fundraising extends Concierge{
     return $this->api->createobject($response,'GenerateDonorReceipt'); 
   }
   
-  public function GenerateDonorReceiptsRequest($accesskey,$associationid,$secreteaccessid,$GiftID){
+  public function GenerateDonorReceiptsRequest($accesskey,$associationid,$secreteaccessid,$listOfGifts){
     
     // Get file content
      $filecontent = $this->api->GetFormat(); 
@@ -123,14 +123,14 @@ class Fundraising extends Concierge{
      
      // Construct Body
      $giftid = '';
-     foreach($GiftID as $GiftID)
+     foreach($listOfGifts as $GiftID)
      {
       $giftid.='<string>'.$GiftID.'</string>';
      }
      
       $body = '<s:Body>
                     <GenerateDonorReceipts xmlns="http://membersuite.com/contracts">
-                    <GiftID>'.$giftid.'</GiftID>
+                    <listOfGifts>'.$giftid.'</listOfGifts>
                     </GenerateDonorReceipts>
                     </s:Body>
                     ';

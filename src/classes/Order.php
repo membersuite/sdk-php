@@ -111,13 +111,21 @@ class Order extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='UpdateOrderBillingInfo',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $address='';
+     if($billingAddress)
+     {
+     foreach($billingAddress as $key=>$value)
+     {
+      $address.='<'.$key.'>'.$value.'</'.$key.'>';
+     }
+     }
       $body = '<s:Body>
                     <UpdateOrderBillingInfo xmlns="http://membersuite.com/contracts">
                     <orderID>'.$orderID.'</orderID>
                     <ccNumber>'.$ccNumber.'</ccNumber>
                     <ccvCode>'.$ccvCode.'</ccvCode>
                     <expDate>'.$expDate.'</expDate>
-                    <billingAddress>'.$billingAddress.'</billingAddress>
+                    <billingAddress>'.$address.'</billingAddress>
                     </UpdateOrderBillingInfo>
                     </s:Body>
                     ';
@@ -143,12 +151,20 @@ class Order extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='UpdateInvoiceBillingInfo',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $address='';
+     if($billingAddress)
+     {
+     foreach($billingAddress as $key=>$value)
+     {
+      $address.='<'.$key.'>'.$value.'</'.$key.'>';
+     }
+     }
       $body = '<s:Body>
                     <UpdateInvoiceBillingInfo xmlns="http://membersuite.com/contracts">
                     <invoiceID>'.$invoiceID.'</invoiceID>
                     <poNumber>'.$poNumber.'</poNumber>
                     <billingEmailAddress>'.$billingEmailAddress.'</billingEmailAddress>
-                    <billingAddress>'.$billingAddress.'</billingAddress>
+                    <billingAddress>'.$address.'</billingAddress>
                     </UpdateInvoiceBillingInfo>
                     </s:Body>
                     ';
@@ -230,10 +246,18 @@ class Order extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='FulfillOrder',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $item = '';
+     if($itemsToFulfill)
+     {
+      foreach($itemsToFulfill as $itemsToFulfill)
+      {
+        $item.='<string>'.$itemsToFulfill.'</string>';
+      }
+     }
       $body = '<s:Body>
                     <FulfillOrder xmlns="http://membersuite.com/contracts">
                     <orderID>'.$orderID.'</orderID>
-                    <itemsToFulfill>'.$itemsToFulfill.'</itemsToFulfill>
+                    <itemsToFulfill>'.$item.'</itemsToFulfill>
                     </FulfillOrder>
                     </s:Body>
                     ';
@@ -259,10 +283,19 @@ class Order extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='ShipOrder',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $item='';
+     if($itemsToShip)
+     {
+      foreach($itemsToShip as $itemsToShip)
+      {
+        $item.='<string>'.$itemsToShip.'</string>';
+      }
+     }
+     
       $body = '<s:Body>
                     <ShipOrder xmlns="http://membersuite.com/contracts">
                     <orderID>'.$orderID.'</orderID>
-                    <itemsToShip>'.$itemsToShip.'</itemsToShip>
+                    <itemsToShip>'.$item.'</itemsToShip>
                     <shipDate>'.$shipDate.'</shipDate>
                     <shippingMethod>'.$shippingMethod.'</shippingMethod>
                     <trackingNumber>'.$trackingNumber.'</trackingNumber>

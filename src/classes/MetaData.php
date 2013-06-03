@@ -191,7 +191,7 @@ class MetaData extends Concierge{
     return $this->api->createobject($response,'DescribeObjectBuiltInFields'); 
   }
   
-  public function GetDefaultDashboardRequest($accesskey,$associationid,$secreteaccessid,$nameOfCommand,$context=true){
+  public function GetDefaultDashboardRequest($accesskey,$associationid,$secreteaccessid,$nameOfCommand,$context='true'){
     
     // Get file content
      $filecontent = $this->api->GetFormat();
@@ -304,10 +304,42 @@ class MetaData extends Concierge{
      // Create API Request Headers
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='UpdateClassMetadata',$accesskey,$associationid,$secreteaccessid);
      // Construct Body
+     $metaobject='';
+     if($metadataToSave)
+     {
+      foreach($metadataToSave as $key=>$value)
+      {
+        if($key<>'Fields' && $key<>'ValidationRules' && $key<>'FieldCalculationRules')
+        $metaobject.='<mem:'.$key.'>'.$value.'</mem:'.$key.'>';
+      }
+     }
+     $validation='';
+     if($metadataToSave->ValidationRules)
+     {
+      foreach($metadataToSave->ValidationRules as $key=>$value)
+      {
+        $validation.='<ValidationRule><mem:'.$key.'>'.$value.'</mem:'.$key.'></ValidationRule>';
+      }
+     }
+     
+     $fieldcalc='';
+     if($metadataToSave->FieldCalculationRules)
+     {
+      foreach($metadataToSave->FieldCalculationRules as $key=>$value)
+      {
+        $fieldcalc.='<FieldCalculationRule><mem:'.$key.'>'.$value.'</mem:'.$key.'></FieldCalculationRule>';
+      }
+     }
+     
      $body = '<s:Body>
                     <UpdateClassMetadata xmlns="http://membersuite.com/contracts">
                     <objectType>'.$objectType.'</objectType>
-                    <metadataToSave>'.$metadataToSave.'</metadataToSave>
+                    <metadataToSave>
+                    <mem:Fields>
+                    '.$metaobject.'
+                    </mem:Fields>
+                    '.$validation.$fieldcalc.'
+                    </metadataToSave>
                     </UpdateClassMetadata>
                     </s:Body>
                     ';
@@ -386,12 +418,21 @@ class MetaData extends Concierge{
      // Create API Request Headers
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='UpdateCustomField',$accesskey,$associationid,$secreteaccessid);
      // Construct Body
-     
+     $custom = $this->object_to_array($packet);
+     $customfields = '';
+     foreach($custom as $key=>$value){
+       if($key<>'ClassType'){ 
+      $customfields.= '<mem:FieldMetadata>
+        <mem:Name>'.$key.'</mem:Name>
+        <mem:Value>'.$value.'</mem:Value>
+        </mem:FieldMetadata>';  
+       }
+      }
      $body = '<s:Body>
                     <UpdateCustomField xmlns="http://membersuite.com/contracts">
                     <packet xmlns:c="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Manifests.CustomField">
                     <c:CustomFieldContainer>
-                    '.$packet.'
+                    '.$customfields.'
                     </c:CustomFieldContainer>
                     </packet>
                     </UpdateCustomField>
@@ -455,7 +496,7 @@ class MetaData extends Concierge{
      $namevaluestringpair='';
      foreach($prefere as $key=>$value)
      {
-      $namevaluestringpair.='<string><name>'.$key.'</name><value>'.$value.'</value>';
+      $namevaluestringpair.='<string><name>'.$key.'</name><value>'.$value.'</value></string>';
      }
      $body = '<s:Body>
                     <UpdatePreferences xmlns="http://membersuite.com/contracts">
@@ -488,7 +529,7 @@ class MetaData extends Concierge{
      $namevaluestringpair='';
      foreach($prefere as $key=>$value)
      {
-      $namevaluestringpair.='<string><name>'.$key.'</name><value>'.$value.'</value>';
+      $namevaluestringpair.='<string><name>'.$key.'</name><value>'.$value.'</value></string>';
      }
      $body = '<s:Body>
                     <UpdateAssociationSettings xmlns="http://membersuite.com/contracts">
@@ -522,12 +563,13 @@ class MetaData extends Concierge{
      $oneclicksearch='';
      foreach($oneClicks as $oneClicks)
      {
-      $oneclicksearch.='<b:Search>'.$this->api->createsearch($oneClicks).'</b:Search>';
+      $click = $this->api->createsearch($oneClicks);
+      $oneclicksearch.='<b:Search>'.$click.'</b:Search>';
      }
      
      $body = '<s:Body>
                     <Get360Packet xmlns="http://membersuite.com/contracts">
-                    <primarySearch>'.$primarysearch.'</newSettings>
+                    <primarySearch>'.$primarysearch.'</primarySearch>
                     <oneClicks>'.$oneclicksearch.'</oneClicks>
                     </Get360Packet>
                     </s:Body>

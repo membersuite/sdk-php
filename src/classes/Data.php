@@ -28,11 +28,19 @@ class Data extends Concierge{
      // Construct Body
      $objecttype = '';
      foreach($objectarr as $key=>$value){
-       if($key<>'ClassType' && $value<>""){
+       if($key<>'ClassType'){
+        if($key=='ID')
+        {
+         $objecttype.='<mem:Aggregate>';
+        }
       $objecttype.= '<mem:KeyValueOfstringanyType>
         <mem:Key>'.$key.'</mem:Key>
         <mem:Value i:type="a:string">'.$value.'</mem:Value>
         </mem:KeyValueOfstringanyType>';  
+        if($key=='SystemTimestamp')
+        {
+         $objecttype.='</mem:Aggregate>';
+        }
        }
       }
      
@@ -50,6 +58,7 @@ class Data extends Concierge{
     // Replace strings
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
+   
    $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
    
    return $this->api->createobject($getsaveResult,'Save'); 
@@ -344,11 +353,17 @@ class Data extends Concierge{
      // Create API Request Headers
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='Merge',$accesskey,$associationid,$secreteaccessid);
      // Construct Body
+     $sourcefield = '';
+     foreach($sourceFieldsToUse as $sourceFieldsToUse)
+     {
+      $sourcefield.='<c:string>'.$sourceFieldsToUse.'</c:string>';
+     }
+     
      $body = '<s:Body>
                     <Merge xmlns="http://membersuite.com/contracts">
                     <source>'.$source.'</source>
                     <destination>'.$destination.'</destination>
-                    <sourceFieldsToUse>'.$sourceFieldsToUse.'</sourceFieldsToUse>
+                    <sourceFieldsToUse xmlns:c="http://schemas.microsoft.com/2003/10/Serialization/Arrays">'.$sourcefield.'</sourceFieldsToUse>
                     </Merge>
                     </s:Body>
                     ';
@@ -381,7 +396,7 @@ class Data extends Concierge{
      
      $body = '<s:Body>
                     <ValidateMultipleAddresses xmlns="http://membersuite.com/contracts">
-                    <entityIdentifiers>'.$entity.'</entityIdentifiers>
+                    <entityIdentifiers xmlns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">'.$entity.'</entityIdentifiers>
                     </ValidateMultipleAddresses>
                     </s:Body>
                     ';
@@ -405,6 +420,18 @@ class Data extends Concierge{
      // Create API Request Headers
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='MassUpdate',$accesskey,$associationid,$secreteaccessid);
      // Construct Body
+     $objectarr = $this->object_to_array($msoNewValues);
+     $objecttype = '';
+     foreach($objectarr as $key=>$value){
+       if($key<>'ClassType'){ 
+      $objecttype.= '<mem:FieldMetadata>
+        <mem:Key>'.$key.'</mem:Key>
+        <mem:Value i:type="a:string">'.$value.'</mem:Value>
+        </mem:FieldMetadata>';  
+       }
+      }
+     
+     
      $record='';
      foreach($recordIdentifiers as $recordIdentifiers)
      {
@@ -415,7 +442,7 @@ class Data extends Concierge{
                     <MassUpdate xmlns="http://membersuite.com/contracts">
                     <recordType>'.$recordType.'</recordType>
                     <recordIdentifiers>'.$record.'</recordIdentifiers>
-                    <msoNewValues>'.$msoNewValues.'</msoNewValues>
+                    <msoNewValues><mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType><mem:Fields>'.$objecttype.'</mem:Fields></msoNewValues>
                     </MassUpdate>
                     </s:Body>
                     ';
@@ -742,29 +769,19 @@ class Data extends Concierge{
       
       foreach($ruleIDs as $ruleIDs)
       {
-        $ruleID.='<string>'.$ruleIDs.'<string>';
+        $ruleID.='<c:string>'.$ruleIDs.'</c:string>';
       }
       
       $objectarr = $this->object_to_array($mso);
      $objecttype = '';
      foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Key>'.$key.'</mem:Key>
-        <mem:Value i:type="a:string">'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
+      $objecttype.= '<mem:'.$key.'>'.$value.'</mem:'.$key.'>';
       }
       
      $body = '<s:Body>
                     <FindPotentialDuplicates xmlns="http://membersuite.com/contracts">
-                    <mso>'.$mso.'
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
-                    '.$objecttype.'
-                    </mem:Fields>
-                    </mso>
-                    <ruleIDs>'.$ruleID.'</ruleIDs>
+                    <mso>'.$objecttype.'</mso>
+                    <ruleIDs xmlns:c="http://schemas.microsoft.com/2003/10/Serialization/Arrays">'.$ruleID.'</ruleIDs>
                     <spec>'.$search.'</spec>
                     <startRecord>'.$startRecord.'</startRecord>
                     <pageSize>'.$pageSize.'</pageSize>

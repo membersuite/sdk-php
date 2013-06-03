@@ -239,7 +239,7 @@ class Membership extends Concierge{
     return $this->api->createobject($response,'GetEmailTemplate'); 
   }
   
-  public function SendEmailRequest($accesskey,$associationid,$secreteaccessid,$nameOrIDOfTemplate,$targets,$overrideEmailAddress){
+  public function SendEmailRequest($accesskey,$associationid,$secreteaccessid,$emailTemplateNameOrID,$targets,$overrideEmailAddress){
     
     // Get file content
      $filecontent = $this->api->GetFormat(); 
@@ -253,13 +253,16 @@ class Membership extends Concierge{
      
      // Construct Body
      $target = '';
+     if($targets)
+     {
      foreach($targets as $targets)
      {
       $target.='<string>'.$targets.'</string>';
      }
+     }
       $body = '<s:Body>
                     <SendEmail xmlns="http://membersuite.com/contracts">
-                    <nameOrIDOfTemplate>'.$nameOrIDOfTemplate.'</nameOrIDOfTemplate>
+                    <emailTemplateNameOrID>'.$emailTemplateNameOrID.'</emailTemplateNameOrID>
                     <targets>'.$target.'</targets>
                     <overrideEmailAddress>'.$overrideEmailAddress.'</overrideEmailAddress>
                     </SendEmail>
@@ -328,6 +331,7 @@ class Membership extends Concierge{
     
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
+    //print_r($apirequest);die;
     $response = $this->api->SendSoapRequest($apirequest,$method='PreviewEmailBlast');
     return $this->api->createobject($response,'PreviewEmailBlast'); 
   }
@@ -415,6 +419,22 @@ class Membership extends Concierge{
         }
         return $str;
         }
-  
+  private function object_to_array($data) 
+  {
+    if ((! is_array($data)) and (! is_object($data))) return $data; 
+    
+      $result = array();
+      
+      $data = (array) $data;
+      foreach ($data as $key => $value) {
+      if (is_object($value)) $value = (array) $value;
+      if (is_array($value)) 
+      $result[$key] = $this->object_to_array($value);
+      else
+        $result[$key] = $value;
+      }
+      
+      return $result;
+      }
 }
 ?>

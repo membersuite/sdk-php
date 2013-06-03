@@ -157,7 +157,7 @@ class Finance extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <WipeProFormaInvoices xmlns="http://membersuite.com/contracts">
-                    <wipeInvoicesBefore>'.$writeOffID.'</wipeInvoicesBefore>
+                    <wipeInvoicesBefore>'.$wipeInvoicesBefore.'</wipeInvoicesBefore>
                     </WipeProFormaInvoices>
                     </s:Body>
                     ';
@@ -184,7 +184,7 @@ class Finance extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <CancelInvoice xmlns="http://membersuite.com/contracts">
-                    <invoiceID>'.$writeOffID.'</invoiceID>
+                    <invoiceID>'.$invoiceID.'</invoiceID>
                     </CancelInvoice>
                     </s:Body>
                     ';
@@ -209,10 +209,17 @@ class Finance extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='ChangeBatch',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     
+     $changebatch = '';
+     foreach($transactionsToChange as $transactionsToChange)
+     {
+      $changebatch.='<string>'.$transactionsToChange.'</string>';
+     }
+     
       $body = '<s:Body>
                     <ChangeBatch xmlns="http://membersuite.com/contracts">
                     <targetBatchID>'.$targetBatchID.'</targetBatchID>
-                    <transactionsToChange>'.$transactionsToChange.'</transactionsToChange>
+                    <transactionsToChange>'.$changebatch.'</transactionsToChange>
                     </ChangeBatch>
                     </s:Body>
                     ';
@@ -237,11 +244,16 @@ class Finance extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='RefundPayment',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $instrct='';
+     foreach($instructions as $instructions)
+     {
+      $instrct.='<PaymentAdjustmentInstruction>'.$instructions.'</PaymentAdjustmentInstruction>';
+     }
       $body = '<s:Body>
                     <RefundPayment xmlns="http://membersuite.com/contracts">
                     <paymentID>'.$paymentID.'</paymentID>
                     <batchID>'.$batchID.'</batchID>
-                    <instructions>'.$instructions.'</instructions>
+                    <instructions>'.$instrct.'</instructions>
                     <memo>'.$memo.'</memo>
                     <autoGenerateRefund>'.$autoGenerateRefund.'</autoGenerateRefund>
                     </RefundPayment>
@@ -268,11 +280,16 @@ class Finance extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='ReversePayment',$accesskey,$associationid,$secreteaccessid);
      
      // Construct Body
+     $instrct='';
+     foreach($instructions as $instructions)
+     {
+      $instrct.='<PaymentAdjustmentInstruction>'.$instructions.'</PaymentAdjustmentInstruction>';
+     }
       $body = '<s:Body>
                     <ReversePayment xmlns="http://membersuite.com/contracts">
                     <paymentID>'.$paymentID.'</paymentID>
                     <batchID>'.$batchID.'</batchID>
-                    <instructions>'.$instructions.'</instructions>
+                    <instructions>'.$instrct.'</instructions>
                     <memo>'.$memo.'</memo>
                     </ReversePayment>
                     </s:Body>
@@ -312,7 +329,7 @@ class Finance extends Concierge{
     return $this->api->createobject($response,'VoidPayment'); 
   }
   
-  public function CancelBillingScheduleRequest($accesskey,$associationid,$secreteaccessid,$paymentID){
+  public function CancelBillingScheduleRequest($accesskey,$associationid,$secreteaccessid,$billingScheduleId){
     
      // Get file content
      $filecontent = $this->api->GetFormat(); 
@@ -327,7 +344,7 @@ class Finance extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <CancelBillingSchedule xmlns="http://membersuite.com/contracts">
-                    <billingScheduleId>'.$paymentID.'</billingScheduleId>
+                    <billingScheduleId>'.$billingScheduleId.'</billingScheduleId>
                     </CancelBillingSchedule>
                     </s:Body>
                     ';
@@ -547,10 +564,10 @@ class Finance extends Concierge{
      $objecttype = '';
      foreach($objectarr as $key=>$value){
        if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
+      $objecttype.= '<mem:KeyValueOfstringanyType>
+        <mem:Key>'.$key.'</mem:Key>
+        <mem:Value i:type="a:string">'.$value.'</mem:Value>
+        </mem:KeyValueOfstringanyType>';  
        }
       }
      
@@ -637,10 +654,10 @@ class Finance extends Concierge{
      $objecttype = '';
      foreach($objectarr as $key=>$value){
        if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
+      $objecttype.= '<mem:KeyValueOfstringanyType>
+        <mem:Key>'.$key.'</mem:Key>
+        <mem:Value i:type="a:string">'.$value.'</mem:Value>
+        </mem:KeyValueOfstringanyType>';  
        }
       }
      
@@ -867,7 +884,7 @@ class Finance extends Concierge{
     return $this->api->createobject($response,'AdjustRefund'); 
   }
   
-  public function PostBatchesRequest($accesskey,$associationid,$secreteaccessid,$batchIDs,$newBatchForProFormaInvoices){
+  public function PostBatchesRequest($accesskey,$associationid,$secreteaccessid,$batchIDs,$newBatchForProFormaInvoices=""){
     
      // Get file content
      $filecontent = $this->api->GetFormat(); 
@@ -885,10 +902,19 @@ class Finance extends Concierge{
       $batchid.='<string>'.$batchIDs.'</string>';
      }
      
+     $newbatch='';
+     if($newBatchForProFormaInvoices)
+     {
+      foreach($newBatchForProFormaInvoices as $newBatchForProFormaInvoices)
+      {
+        $newbatch.='<string>'.$newBatchForProFormaInvoices.'</string>';
+      }
+     }
+     
       $body = '<s:Body>
                     <PostBatches xmlns="http://membersuite.com/contracts">
                     <batchIDs>'.$batchid.'</batchIDs>
-                    <newBatchForProFormaInvoices>'.$newBatchForProFormaInvoices.'</newBatchForProFormaInvoices>
+                    <newBatchForProFormaInvoices xmlns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">'.$newbatch.'</newBatchForProFormaInvoices>
                     </PostBatches>
                     </s:Body>
                     ';
@@ -1056,10 +1082,10 @@ class Finance extends Concierge{
      $objecttype = '';
      foreach($objectarr as $key=>$value){
        if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
+      $objecttype.= '<mem:KeyValueOfstringanyType>
+        <mem:Key>'.$key.'</mem:Key>
+        <mem:Value i:type="a:string">'.$value.'</mem:Value>
+        </mem:KeyValueOfstringanyType>';  
        }
       }
      
@@ -1109,17 +1135,12 @@ class Finance extends Concierge{
       $creditcard = $this->object_to_array($creditCardToProcess);
      $cardtoprocess = '';
      foreach($creditcard as $key=>$value){
-       if($key<>'ClassType'){ 
-      $cardtoprocess.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
+      $cardtoprocess.= '<'.$key.'>'.$value.'</'.$key.'>';
       }
      
       $body = '<s:Body>
                     <ProcessCreditCardPayment xmlns="http://membersuite.com/contracts">
-                    <mem:paymentToRecord>
+                    <paymentToRecord>
                     <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
                     <mem:Fields>
                     '.$payment.'

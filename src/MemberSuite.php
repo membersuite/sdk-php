@@ -162,7 +162,7 @@ class MemberSuite{
         /// <param name="baseObjectType" optional="true">Type of the base object to use. Leave this as null for all objects.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function ListAllObjects($includeAbstract,$baseObjectType){
+  public function ListAllObjects($includeAbstract,$baseObjectType=''){
    
     $objectresponse = $this->metadata->ListObjectRequest($this->accesskeyId,
                                       $this->associationId,
@@ -282,7 +282,7 @@ class MemberSuite{
         /// <returns></returns>
         /// <remarks>This method will run multiple searches in parallel and return the result. It is designed to be faster than running
         /// the searches in multiple API calls.</remarks>
-  public function ExecuteSearches($searchesToExecute,$startRecord,$maximumNumberOfRecordsToReturn){
+  public function ExecuteSearches($searchesToExecute,$startRecord,$maximumNumberOfRecordsToReturn=''){
    
    $searchresponse = $this->search->ExecuteSearchesRequest($this->accesskeyId,
                                      $this->associationId,
@@ -733,7 +733,7 @@ class MemberSuite{
         /// <param name="targetID">The target ID.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function GetFileCabinetRootFolder($discussionPostId){
+  public function GetFileCabinetRootFolder($targetID){
    
    $response = $this->documnt->GetFileCabinetRequest($this->accesskeyId,
                                      $this->associationId,
@@ -1317,7 +1317,7 @@ class MemberSuite{
         /// <param name="newBatchForProFormaInvoices" optional="true">The new batch for pro forma invoices.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function PostBatches($batchIDs,$newBatchForProFormaInvoices){
+  public function PostBatches($batchIDs,$newBatchForProFormaInvoices=""){
    
    $response = $this->finance->PostBatchesRequest($this->accesskeyId,
                                      $this->associationId,
@@ -1745,12 +1745,12 @@ class MemberSuite{
         /// <param name="listOfGifts">The list of gifts.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function GenerateDonorReceipts($GiftID){
+  public function GenerateDonorReceipts($listOfGifts){
   
     $response = $this->fund->GenerateDonorReceiptsRequest($this->accesskeyId,
                                      $this->associationId,
                                      $this->secretaccessId,
-                                     $GiftID
+                                     $listOfGifts
                                      );
     return $response;  
   }
@@ -1893,7 +1893,7 @@ class MemberSuite{
         /// <param name="activityMemo" optional="true">The activity memo.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function ExecuteMailMerge($searchToUse,$mailMergeTemplate,$outputFormat,$createActivity,$activityTypeID,$activityMemo){
+  public function ExecuteMailMerge($searchToUse,$mailMergeTemplate,$outputFormat,$createActivity,$activityTypeID="",$activityMemo=""){
    
    $response = $this->integration->ExecuteMailMergeRequest($this->accesskeyId,
                                      $this->associationId,
@@ -1954,7 +1954,7 @@ class MemberSuite{
         /// <param name="ns" optional="true">The namespace. If left blank, all settings are returned.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function GetAllConfigurationSettings($ns){
+  public function GetAllConfigurationSettings($ns=''){
    
    $response = $this->integration->GetAllConfigurationSettingRequest($this->accesskeyId,
                                      $this->associationId,
@@ -2173,12 +2173,12 @@ class MemberSuite{
         /// a specific address.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function SendEmail($nameOrIDOfTemplate,$targets,$overrideEmailAddress){
+  public function SendEmail($emailTemplateNameOrID,$targets='',$overrideEmailAddress=''){
    
    $response = $this->membership->SendEmailRequest($this->accesskeyId,
                                      $this->associationId,
                                      $this->secretaccessId,
-                                     $nameOrIDOfTemplate,
+                                     $emailTemplateNameOrID,
                                      $targets,
                                      $overrideEmailAddress
                                      );
@@ -2211,7 +2211,7 @@ class MemberSuite{
         /// a specific address.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function SendCustomizedEmail($template,$targets,$overrideEmailAddress){
+  public function SendCustomizedEmail($template,$targets,$overrideEmailAddress=''){
    
    $response = $this->membership->SendCustomizedEmailRequest($this->accesskeyId,
                                      $this->associationId,
@@ -2592,7 +2592,7 @@ class MemberSuite{
         /// when the order completes.</returns>
         /// <remarks>Order processing uses a queued model, so this method will return immediately even though the order is 
         /// not processed immediately. Ping the <service name="CheckLongRunningTaskStatus"/> to see when the order is completed.</remarks>
-  public function ProcessOrder($msOrderToProcess,$antiDuplicationKey){
+  public function ProcessOrder($msOrderToProcess,$antiDuplicationKey=''){
    
    $response = $this->order->ProcessOrderRequest($this->accesskeyId,
                                      $this->associationId,
@@ -2947,7 +2947,7 @@ class MemberSuite{
         /// entitlement type/context. In other words, if you have two job posting entitlements, the system
         /// will only return one record, with the combined quantity/quantity available. That's why you want
         /// to call this method, rather than just running a search.</remarks>
-  public function ListEntitlements($entityID,$type){
+  public function ListEntitlements($entityID,$type=""){
    
    $response = $this->portal->ListEntitlementsRequest($this->accesskeyId,
                                      $this->associationId,
@@ -3223,7 +3223,7 @@ class MemberSuite{
         /// <param name="context" optional="true">The context.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function BuildChart($chartName,$context){
+  public function BuildChart($chartName,$context=""){
    
    $response = $this->portal->BuildChartRequest($this->accesskeyId,
                                      $this->associationId,
