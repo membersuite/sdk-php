@@ -5,23 +5,23 @@ Membersuite Address Object
 
 class Address
 {
-    var $Company;
-    var $Line1;
-    var $Line2;
-    var $City;
-    var $State;
-    var $PostalCode;
-    var $Country;
-    var $County;
-    var $CongressionalDistrict;
-    var $CASSCertificationDate;
-    var $CarrierRoute;
-    var $DeliveryPointCode;
-    var $DeliveryPointCheckDigit;
-    var $GeocodeLat;
-    var $GeocodeLong;
-    var $LastGeocodeDate;
-    
+  var $RecordType = 'Address';
+  var $CASSCertificationDate;
+  var $CarrierRoute;
+  var $City;
+  var $Company;
+  var $CongressionalDistrict;
+  var $Country;
+  var $County;
+  var $DeliveryPointCheckDigit;
+  var $DeliveryPointCode;
+  var $GeocodeLat;
+  var $GeocodeLong;
+  var $LastGeocodeDate;
+  var $Line1;
+  var $Line2;
+  var $PostalCode;
+  var $State;
 }
 
 class EmailTemplate

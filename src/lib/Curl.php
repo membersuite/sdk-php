@@ -14,6 +14,10 @@ class Curl{
 		
 		// cURL initilization 
 		$curl = curl_init();
+		
+		$certPath = $_SERVER['DOCUMENT_ROOT'].'/ms_sdk/lib/mozilla.pem';
+		curl_setopt($curl, CURLOPT_CAINFO, $certPath);
+		
 		// setting up the cURL URL
 		$this->curlurl($curl);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, $this->returnval);

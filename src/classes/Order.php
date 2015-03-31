@@ -352,22 +352,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($order);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <GetOrderForm xmlns="http://membersuite.com/contracts">
                     <order>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </order>
                     </GetOrderForm>
                     </s:Body>
@@ -394,22 +383,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msOrderToProcess);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <ProcessOrder xmlns="http://membersuite.com/contracts">
                     <msOrderToProcess>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msOrderToProcess>
                     <antiDuplicationKey>'.$antiDuplicationKey.'</antiDuplicationKey>
                     </ProcessOrder>
@@ -437,22 +415,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msoOrder);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <SaveDetails xmlns="http://membersuite.com/contracts">
                     <msoOrder>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msoOrder>
                     </SaveDetails>
                     </s:Body>
@@ -479,22 +446,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msReturn);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <ProcessReturn xmlns="http://membersuite.com/contracts">
                     <msReturn>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msReturn>
                     <autoGenerateRefunds>'.$autoGenerateRefunds.'</autoGenerateRefunds>
                     </ProcessReturn>
@@ -522,22 +478,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msoFulfillmentBatch);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <SaveFulfillmentBatch xmlns="http://membersuite.com/contracts">
                     <msoFulfillmentBatch>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msoFulfillmentBatch>
                     </SaveFulfillmentBatch>
                     </s:Body>
@@ -564,22 +509,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msOrderToAdjust);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <AdjustOrder xmlns="http://membersuite.com/contracts">
                     <msOrderToAdjust>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msOrderToAdjust>
                     </AdjustOrder>
                     </s:Body>
@@ -606,22 +540,11 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($msOrderToFinalize);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <PreProcessOrder xmlns="http://membersuite.com/contracts">
                     <msOrderToFinalize>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msOrderToFinalize>
                     </PreProcessOrder>
                     </s:Body>
@@ -648,50 +571,19 @@ class Order extends Concierge{
      
      // Construct Body
      $objectarr = $this->object_to_array($inventoryTransaction);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <ProcessInventoryTransaction xmlns="http://membersuite.com/contracts">
                     <inventoryTransaction>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </inventoryTransaction>
                     </ProcessInventoryTransaction>
                     </s:Body>
                     ';
-    
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
-    
     $response = $this->api->SendSoapRequest($apirequest,$method='ProcessInventoryTransaction');
     return $this->api->createobject($response,'ProcessInventoryTransaction'); 
-  }
-  
-  private function object_to_array($data) 
-    {
-    if ((! is_array($data)) and (! is_object($data))) return $data;
-    
-      $result = array();
-      
-      $data = (array) $data;
-      foreach ($data as $key => $value) {
-      if (is_object($value)) $value = (array) $value;
-      if (is_array($value)) 
-      $result[$key] = $this->object_to_array($value);
-      else
-          $result[$key] = $value;
-      }
-    
-    return $result;
   }
 }
 ?>

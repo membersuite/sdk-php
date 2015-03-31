@@ -7,61 +7,66 @@
 include_once('Concierge.php');
 
 class Data extends Concierge{
+  private $debug = false;
   
   public function __construct(){
    // Create object of the concierge class
     $this->api = new Concierge();
   }
   
+  public function FromClassMetadata($resultobject)
+  {
+    $metadataarray = array();
+        
+    $responsearr = $this->object_to_array($resultobject);
+        
+    $metadataarray['ClassType'] = $responsearr['Name'];
+        
+    if($responsearr['bFields']['bFieldMetadata'])
+    $resultset = $responsearr['bFields']['bFieldMetadata'];
+    else if($responsearr['bFields']['bKeyValueOfstringanyType'])
+    $resultset = $responsearr['bFields']['bKeyValueOfstringanyType'];
+        
+    foreach($resultset as $key)
+    {
+        $metadataarray[$key['bName']] = $key['bDefaultValue'];
+    }
+    return $metadataarray;
+  }
+    
   // function to save data
   public function SaveDataRequest($accesskey,$associationid,$secreteaccessid,$object){
-   // Get file content
-     $filecontent = $this->api->GetFormat();
-     if($filecontent=='Error')
-     {
+    // Get file content
+    $filecontent = $this->api->GetFormat();
+    if($filecontent=='Error')
+    {
       $errormsg = 'API Request can not be generated';
       return false;
-     }
-     // Create API Request Headers
-     $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='Save',$accesskey,$associationid,$secreteaccessid);
-     $objectarr = $this->object_to_array($object);
-     // Construct Body
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){
-        if($key=='ID')
-        {
-         $objecttype.='<mem:Aggregate>';
-        }
-      $objecttype.= '<mem:KeyValueOfstringanyType>
-        <mem:Key>'.$key.'</mem:Key>
-        <mem:Value i:type="a:string">'.$value.'</mem:Value>
-        </mem:KeyValueOfstringanyType>';  
-        if($key=='SystemTimestamp')
-        {
-         $objecttype.='</mem:Aggregate>';
-        }
-       }
-      }
-     
-     $body = '<s:Body>
+    }
+    // Create API Request Headers
+    $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='Save',$accesskey,$associationid,$secreteaccessid);
+    $objectarr = $this->object_to_array($object);
+    $objecttype = $this->build_msnode($objectarr);  
+    
+    $body = '<s:Body>
                     <Save xmlns="http://membersuite.com/contracts">
                     <objectToSave>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </objectToSave>
                     </Save>
                     </s:Body>
                     ';
     // Replace strings
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
+    
+    if ($this->debug) echo 'SAVE REQUEST<br>'.$apirequest.'<br><br>';
+    
     // Create Response
+    $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
    
-   $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
-   
-   return $this->api->createobject($getsaveResult,'Save'); 
+    if ($this->debug) echo 'SAVE RESULT<br>'.$getsaveResult.'<br><br>';
+    
+    return $this->api->createobject($getsaveResult,'Save'); 
   }
   
   public function GetDataRequest($accesskey,$associationid,$secreteaccessid,$Id){
@@ -86,8 +91,23 @@ class Data extends Concierge{
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
     $getResult = $this->api->SendSoapRequest($apirequest,$method='Get');
-    
     return $this->api->createobject($getResult,'Get'); 
+  }
+  
+  public function GetObject($accesskey,$associationid,$secreteaccessid,$Id){
+      $response = $this->GetDataRequest($accesskey,$associationid,$secreteaccessid,$Id);
+      if ($response->aSuccess == 'true')
+      {    	
+    	  $obj = $this->build_msobject($response->aResultValue); 
+		    return $obj;
+  	  } else {
+		    throw new Exception("Could not find object Id=".$Id);
+	  }	
+  }
+  
+  public function ConvertToObject($data){
+    $obj = $this->build_msobject($data); 
+		return $obj;
   }
   
   public function RecordJobRequest($accesskey,$associationid,$secreteaccessid,$jobID,$additionalLogText,$newStatus){
@@ -421,16 +441,7 @@ class Data extends Concierge{
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='MassUpdate',$accesskey,$associationid,$secreteaccessid);
      // Construct Body
      $objectarr = $this->object_to_array($msoNewValues);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Key>'.$key.'</mem:Key>
-        <mem:Value i:type="a:string">'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
-     
+     $objecttype = $this->build_msnode($objectarr);  
      
      $record='';
      foreach($recordIdentifiers as $recordIdentifiers)
@@ -442,7 +453,7 @@ class Data extends Concierge{
                     <MassUpdate xmlns="http://membersuite.com/contracts">
                     <recordType>'.$recordType.'</recordType>
                     <recordIdentifiers>'.$record.'</recordIdentifiers>
-                    <msoNewValues><mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType><mem:Fields>'.$objecttype.'</mem:Fields></msoNewValues>
+                    <msoNewValues>'.$objecttype.'</msoNewValues>
                     </MassUpdate>
                     </s:Body>
                     ';
@@ -505,23 +516,12 @@ class Data extends Concierge{
       $ids.='<string>'.$idsToAssign.'</string>';
      }
      $objectarr = $this->object_to_array($msoEntitlement);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Name>'.$key.'</mem:Name>
-        <mem:Value>'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
      
      $body = '<s:Body>
                     <MassAssignEntitlements xmlns="http://membersuite.com/contracts">
                     <msoEntitlement>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msoEntitlement>
                     <idsToAssign>'.$ids.'</idsToAssign>
                     </MassAssignEntitlements>
@@ -549,23 +549,12 @@ class Data extends Concierge{
      // Construct Body
     
      $objectarr = $this->object_to_array($msoErrorAuditLog);
-     $objecttype = '';
-     foreach($objectarr as $key=>$value){
-       if($key<>'ClassType'){ 
-      $objecttype.= '<mem:FieldMetadata>
-        <mem:Key>'.$key.'</mem:Key>
-        <mem:Value i:type="a:string">'.$value.'</mem:Value>
-        </mem:FieldMetadata>';  
-       }
-      }
+     $objecttype = $this->build_msnode($objectarr);  
      
      $body = '<s:Body>
                     <RecordErrorAuditLog xmlns="http://membersuite.com/contracts">
                     <msoErrorAuditLog>
-                    <mem:ClassType>'.$objectarr['ClassType'].'</mem:ClassType>
-                    <mem:Fields>
                     '.$objecttype.'
-                    </mem:Fields>
                     </msoErrorAuditLog>
                     </RecordErrorAuditLog>
                     </s:Body>
@@ -793,35 +782,7 @@ class Data extends Concierge{
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
     $getResult = $this->api->SendSoapRequest($apirequest,$method='FindPotentialDuplicates');
-    return $this->api->createobject($getResult,'FindPotentialDuplicates'); 
-    
+    return $this->api->createobject($getResult,'FindPotentialDuplicates');
   }
-  
-  public function str_replace_last( $search , $replace , $str ) {
-        if( ( $pos = strrpos( $str , $search ) ) !== false ) {
-            $search_length  = strlen( $search );
-            $str    = substr_replace( $str , $replace , $pos , $search_length );
-        }
-        return $str;
-        }
-        
-   private function object_to_array($data) 
-    {
-    if ((! is_array($data)) and (! is_object($data))) return $data;
-    
-      $result = array();
-      
-      $data = (array) $data;
-      foreach ($data as $key => $value) {
-      if (is_object($value)) $value = (array) $value;
-      if (is_array($value)) 
-      $result[$key] = $this->object_to_array($value);
-      else
-          $result[$key] = $value;
-      }
-    
-    return $result;
-  }
-  
 }
 ?>  

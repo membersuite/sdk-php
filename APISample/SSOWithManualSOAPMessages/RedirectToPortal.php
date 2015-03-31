@@ -62,8 +62,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
 <form name="LoginForm" method="post" id="LoginForm" action="<?php echo Userconfig::read('PortalUrl');?>Login.aspx">
     <input type="hidden" name="Token" id="Token" value="<?php echo $securityToken;?>" />
+        
+	<!--Once logged into Membersuite, jump to this URL-->
+	<input type="hidden" name="NextUrl" id="NextUrl" />
+
+	<!--In the MemberSuite Portal header, provide a return link to a custom URL-->
     <input type="hidden" name="ReturnUrl" id="ReturnUrl" value="default.aspx" />
-    <input type="hidden" name="NextUrl" id="NextUrl" value="" />
+	<input type="hidden" name="ReturnText" id="ReturnText" />
+	
+	<!--On logout from the MemberSuite Portal, redirect to this URL rather than the default login page-->
+	<input type="hidden" name="LogoutUrl" id="LogoutUrl" />
 </form>
 <script>
     document.LoginForm.submit();

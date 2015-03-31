@@ -6,31 +6,148 @@ Membersuite Object Types
 
 class msDomainObject
 {
- var $CLASS_NAME = 'DomainObject';
+  var $CLASS_NAME = 'DomainObject';
+
+  public function __construct($data){
+    if(is_object($data)){
+      $data = $this->create_dictionary($data);
+    }
+    $this->load_data($data);
+  }
+  
+  protected function load_data($data){
+  }
+  
+  protected function create_dictionary($data){
+    $resdata = $this->object_to_array($data->bFields->bKeyValueOfstringanyType);
+    $data = array();
+    foreach($resdata as $result){
+      $data[$result['bKey']]=$result['bValue'];
+    }
+    return $data;
+  }
+  
+  protected function object_to_array($data) 
+  {
+    if ((!is_array($data)) and (!is_object($data))) return $data;
+    
+    $result = array();
+    $data = (array) $data;
+    foreach ($data as $key => $value) {
+      if (is_object($value)) $value = (array) $value;
+      if (is_array($value)) 
+      $result[$key] = $this->object_to_array($value);
+      else
+          $result[$key] = $value;
+    }
+    return $result;
+  }
 }
 
 class msAggregate extends msDomainObject
 {
- var $CLASS_NAME = 'Aggregate';
- var $ClassType = 'Aggregate';
- //Fields
- var $ID;
- var $Name;
- var $Keywords;
- var $LastModifiedBy;
- var $LastModifiedDate;
- var $CreatedDate;
- var $CreatedBy;
- var $LockedForDeletion;
- var $IsConfiguration;
- var $IsSealed;
- var $SystemTimestamp;
+  var $CLASS_NAME = 'Aggregate';
+  var $ClassType = 'Aggregate';
+  
+  //Fields
+  var $ID;
+  var $Name;
+  var $Keywords;
+  var $LastModifiedBy;
+  var $LastModifiedDate;
+  var $CreatedDate;
+  var $CreatedBy;
+  var $LockedForDeletion;
+  var $IsConfiguration;
+  var $IsSealed;
+  var $SystemTimestamp;
+  
+  protected function load_data($data){
+    if(isset($data['ID'])){
+      $this->ID = $data['ID'];
+    }
+    if(isset($data['Name'])){
+      $this->Name=$data['Name'];
+    }
+    if(isset($data['LastModifiedBy'])){
+      $this->LastModifiedBy=$data['LastModifiedBy'];
+    }
+    if(isset($data['LastModifiedDate'])){
+      $this->LastModifiedDate=$data['LastModifiedDate'];
+    }
+    if(isset($data['CreatedDate'])){
+      $this->CreatedDate=$data['CreatedDate'];
+    }
+    if(isset($data['CreatedBy'])){
+      $this->CreatedBy=$data['CreatedBy'];
+    }
+    if(isset($data['IsConfiguration'])){
+      $this->IsConfiguration=$data['IsConfiguration'];
+    }
+    if(isset($data['SystemTimestamp'])){
+      $this->SystemTimestamp=$data['SystemTimestamp'];
+    }
+  }
 }
 
 class msEntity extends msAggregate
- {
+{
   var $CLASS_NAME = 'Entity';
   var $ClassType = 'Entity';
+  
+  protected function load_data($data){
+    parent::load_data($data);
+    
+    if(isset($data['Owner'])){
+      $this->Owner=$data['Owner'];
+    }
+    if(isset($data['EmailAddress'])){
+      $this->EmailAddress=$data['EmailAddress'];
+    }
+    if(isset($data['Addresses'])){
+      $this->Addresses=$data['Addresses'];
+    }
+    if(isset($data['TaxExempt'])){
+      $this->TaxExempt=$data['TaxExempt'];
+    }
+    if(isset($data['DefaultCreditTerms'])){
+      $this->DefaultCreditTerms=$data['DefaultCreditTerms'];
+    }
+    if(isset($data['PhoneNumbers'])){
+      $this->PhoneNumbers=$data['PhoneNumbers'];
+    }
+    if(isset($data['PreferredAddressType'])){
+      $this->PreferredAddressType=$data['PreferredAddressType'];
+    }
+    if(isset($data['PreferredPhoneNumberType'])){
+      $this->PreferredPhoneNumberType=$data['PreferredPhoneNumberType'];
+    }
+    if(isset($data['DonorLevel'])){
+      $this->DonorLevel=$data['DonorLevel'];
+    }
+    if(isset($data['SourceCode'])){
+      $this->SourceCode=$data['SourceCode'];
+    }
+    if(isset($data['MediaCode'])){
+      $this->MediaCode=$data['MediaCode'];
+    }
+    if(isset($data['WebSite'])){
+      $this->WebSite=$data['WebSite'];
+    }
+    if(isset($data['Notes'])){
+      $this->Notes=$data['Notes'];
+    }
+    if(isset($data['Image'])){
+      $this->Image=$data['Image'];
+    }
+    if(isset($data['LocalID'])){
+      $this->LocalID=$data['LocalID'];
+    }
+    if(isset($data['LegislativeDistricts'])){
+      $this->LegislativeDistricts=$data['LegislativeDistricts'];
+    }
+  }
+  
   var $Owner;
   var $SortName;
   var $EmailAddress;
@@ -48,175 +165,103 @@ class msEntity extends msAggregate
   var $Image;
   var $LocalID;
   var $LegislativeDistricts;
- }
-
-
+}
 
 class msIndividual extends msEntity
 {
- var $ClassType="Individual";   
- var $FirstName;
- var $MiddleName;
- var $LastName;
- var $Nickname;
- var $LocalID;
- var $Name;
- var $DoNotEmail;
- var $OptOuts;
- var $DoNotFax;
- var $DoNotMail;
- var $Age;
- var $Type;
- var $DateOfBirth;
- var $EmailAddress2;
- var $EmailAddress3;
- var $Title;
- var $Prefix;
- var $Suffix;
- var $Designation;
- var $Company;
- var $SeasonalAddressStart;
- var $SeasonalAddressEnd;
- 
-}
- 
- class ConvertTomsIndividual extends msIndividual
- {
+  var $ClassType="Individual";
   
-  public function __construct($data){
+  var $FirstName;
+  var $MiddleName;
+  var $LastName;
+  var $Nickname;
+  var $LocalID;
+  var $Name;
+  var $DoNotEmail;
+  var $OptOuts;
+  var $DoNotFax;
+  var $DoNotMail;
+  var $Age;
+  var $Type;
+  var $DateOfBirth;
+  var $EmailAddress2;
+  var $EmailAddress3;
+  var $Title;
+  var $Prefix;
+  var $Suffix;
+  var $Designation;
+  var $Company;
+  var $SeasonalAddressStart;
+  var $SeasonalAddressEnd;
   
-  if(is_object($data))
-  {
-   
-   $resdata = $this->object_to_array($data->bFields->bKeyValueOfstringanyType);
-   $data = array();
-   foreach($resdata as $result)
-   {
+  protected function load_data($data){
+    parent::load_data($data);
     
-    $data[$result['bKey']]=$result['bValue'];
-    
-   }
-   
-  }
-  
-  if($data['FirstName'])
-  {
-   $this->FirstName =$data['FirstName'];
-  }
-  
-  if($data['MiddleName'])
-  {
-   $this->MiddleName =$data['MiddleName'];
-  }
-  if($data['LastName'])
-  {
-   $this->LastName =$data['LastName'];
-  }
-  if($data['Nickname'])
-  {
-   $this->Nickname =$data['Nickname'];
-  }
-  if($data['DoNotEmail'])
-  {
-   $this->DoNotEmail =$data['DoNotEmail'];
-  }
-  if($data['OptOuts'])
-  {
-   $this->OptOuts =$data['OptOuts'];
-  }
-  if($data['DoNotFax'])
-  {
-   $this->DoNotFax =$data['DoNotFax'];
-  }
-  if($data['DoNotMail'])
-  {
-   $this->DoNotMail =$data['DoNotMail'];
-  }
-  if($data['Age'])
-  {
-   $this->Age =$data['Age'];
-  }
-  if($data['Type'])
-  {
-   $this->Type =$data['Type'];
-  }
-  if($data['DateOfBirth'])
-  {
-   $this->DateOfBirth =$data['DateOfBirth'];
-  }
-  if($data['EmailAddress2'])
-  {
-   $this->EmailAddress2 =$data['EmailAddress2'];
-  }
-  if($data['EmailAddress3'])
-  {
-   $this->EmailAddress3 =$data['EmailAddress3'];
-  }
-  if($data['Title'])
-  {
-   $this->Title =$data['Title'];
-  }
-  if($data['Prefix'])
-  {
-   $this->Prefix =$data['Prefix'];
-  }
-  if($data['Suffix'])
-  {
-   $this->Suffix =$data['Suffix'];
-  }
-  if($data['Designation'])
-  {
-   $this->Designation =$data['Designation'];
-  }
-  if($data['Company'])
-  {
-   $this->Company =$data['Company'];
-  }
-  if($data['SeasonalAddressStart'])
-  {
-   $this->SeasonalAddressStart =$data['SeasonalAddressStart'];
-  }
-  
-  if($data['SeasonalAddressEnd'])
-  {
-   $this->SeasonalAddressEnd =$data['SeasonalAddressEnd'];
-  }
-  
-  if(isset($data['LocalID']))
-  {
-   $this->LocalID =$data['LocalID'];
-  }
-  
-  if(isset($data['Name']))
-  {
-   $this->Name =$data['Name'];
-  }
-   
-  }
-  
-  private function object_to_array($data) 
-    {
-    if ((! is_array($data)) and (! is_object($data))) return 'xxx'; //$data;
-    
-      $result = array();
-      
-      $data = (array) $data;
-      foreach ($data as $key => $value) {
-      if (is_object($value)) $value = (array) $value;
-      if (is_array($value)) 
-      $result[$key] = $this->object_to_array($value);
-      else
-          $result[$key] = $value;
-      }
-    
-    return $result;
+    if($data['FirstName']){
+      $this->FirstName=$data['FirstName'];
+    }  
+    if($data['MiddleName']){
+      $this->MiddleName=$data['MiddleName'];
     }
-  
- }
+    if($data['LastName']){
+      $this->LastName=$data['LastName'];
+    }
+    if($data['Nickname']){
+      $this->Nickname=$data['Nickname'];
+    }
+    if($data['DoNotEmail']){
+      $this->DoNotEmail=$data['DoNotEmail'];
+    }
+    if($data['OptOuts']){
+      $this->OptOuts=$data['OptOuts'];
+    }
+    if($data['DoNotFax']){
+      $this->DoNotFax=$data['DoNotFax'];
+    }
+    if($data['DoNotMail']){
+      $this->DoNotMail=$data['DoNotMail'];
+    }
+    if($data['Age']){
+      $this->Age=$data['Age'];
+    }
+    if($data['Type']){
+      $this->Type=$data['Type'];
+    }
+    if($data['DateOfBirth']){
+      $this->DateOfBirth=$data['DateOfBirth'];
+    }
+    if($data['EmailAddress2']) {
+      $this->EmailAddress2=$data['EmailAddress2'];
+    }
+    if($data['EmailAddress3']){
+      $this->EmailAddress3=$data['EmailAddress3'];
+    }
+    if($data['Title']){
+      $this->Title=$data['Title'];
+    }
+    if($data['Prefix']){
+      $this->Prefix=$data['Prefix'];
+    }
+    if($data['Suffix']){
+      $this->Suffix=$data['Suffix'];
+    }
+    if($data['Designation']){
+      $this->Designation=$data['Designation'];
+    }
+    if($data['Company']){
+      $this->Company=$data['Company'];
+    }
+    if($data['SeasonalAddressStart']){
+      $this->SeasonalAddressStart=$data['SeasonalAddressStart'];
+    }  
+    if($data['SeasonalAddressEnd']){
+      $this->SeasonalAddressEnd=$data['SeasonalAddressEnd'];
+    }
+  }
+}
 
- class msUser extends msAggregate
- {
- 
+class msUser extends msAggregate
+{
  var $ClassType="CustomerUser"; 
  var $FirstName = "FirstName";
  var $LastName = "LastName";
@@ -455,25 +500,6 @@ class msIndividual extends msEntity
   }
    
   }
-  
-  private function object_to_array($data) 
-    {
-    if ((! is_array($data)) and (! is_object($data))) return $data; //$data;
-    
-      $result = array();
-      
-      $data = (array) $data;
-      foreach ($data as $key => $value) {
-      if (is_object($value)) $value = (array) $value;
-      if (is_array($value)) 
-      $result[$key] = $this->object_to_array($value);
-      else
-          $result[$key] = $value;
-      }
-    
-    return $result;
-    }
-  
  }
  
  class msEntitlement extends msAggregate

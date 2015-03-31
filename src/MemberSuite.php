@@ -78,10 +78,6 @@ class MemberSuite{
     
     //Create Portal services object
     $this->portal = new Portal();
-    
-    
-    
-    
    }
   
         /// <summary>
@@ -218,15 +214,27 @@ class MemberSuite{
         /// <returns></returns>
         /// <remarks></remarks>
   public function Get($Id){
-    
     $dataresponse = $this->data->GetDataRequest($this->accesskeyId,
                                      $this->associationId,
                                      $this->secretaccessId,
-                                     $Id
-                                     );
+                                     $Id);
     
     return $dataresponse;
+  }
+  
+        /// <summary>
+        /// Gets the object for a record with the specified id.
+        /// </summary><type>Database</type>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+  function GetObject($Id){
+    $dataresponse = $this->data->GetObject($this->accesskeyId,
+                                     $this->associationId,
+                                     $this->secretaccessId,
+                                     $Id);
     
+    return $dataresponse;
   }
   
         /// <summary>
@@ -4097,5 +4105,10 @@ class MemberSuite{
     return $response;
   }
   
+  public function FromClassMetadata($resultobject)
+  {
+    $metadataarray = $this->data->FromClassMetadata($resultobject);
+    return $metadataarray;
+  }
 }
 ?>

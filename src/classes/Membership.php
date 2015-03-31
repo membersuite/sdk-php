@@ -410,31 +410,5 @@ class Membership extends Concierge{
     $response = $this->api->SendSoapRequest($apirequest,$method='DropMemberships');
     return $this->api->createobject($response,'DropMemberships'); 
   }
-  
-  
-  public function str_replace_last( $search , $replace , $str ) {
-        if( ( $pos = strrpos( $str , $search ) ) !== false ) {
-            $search_length  = strlen( $search );
-            $str    = substr_replace( $str , $replace , $pos , $search_length );
-        }
-        return $str;
-        }
-  private function object_to_array($data) 
-  {
-    if ((! is_array($data)) and (! is_object($data))) return $data; 
-    
-      $result = array();
-      
-      $data = (array) $data;
-      foreach ($data as $key => $value) {
-      if (is_object($value)) $value = (array) $value;
-      if (is_array($value)) 
-      $result[$key] = $this->object_to_array($value);
-      else
-        $result[$key] = $value;
-      }
-      
-      return $result;
-      }
 }
 ?>
