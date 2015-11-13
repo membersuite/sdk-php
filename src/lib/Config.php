@@ -23,7 +23,10 @@ class Config{
                                   </ConciergeRequestHeader>
                                 </s:Header>
                                 <s:Body></s:Body>
-                              </s:Envelope>'
+                              </s:Envelope>',
+			 'BaseNamespaces' => 'xmlns:mem="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Types"
+                               xmlns:i="http://www.w3.org/2001/XMLSchema-instance"
+                              xmlns:a="http://www.w3.org/2001/XMLSchema"'
             );
   
   return $config[$name];

@@ -14,6 +14,11 @@ class Data extends Concierge{
     $this->api = new Concierge();
   }
   
+  public function SerializeObject($parentTag, $mso) {
+	$objectarr = $this->object_to_array($mso);
+	return '<mem:'.$parentTag.' '.Config::Read('BaseNamespaces').'>'.$this->build_msnode($objectarr).'</mem:'.$parentTag.'>'; 
+  }
+  
   public function FromClassMetadata($resultobject)
   {
     $metadataarray = array();

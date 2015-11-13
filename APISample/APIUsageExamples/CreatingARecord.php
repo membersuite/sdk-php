@@ -70,6 +70,7 @@
   $address->Country = 'US';
   
   $person->Home_Address = $address;
+  $person->Seasonal_Address = $address;
   
   // Save Data Now
   $getsaveResult = $api->Save($person);
@@ -79,7 +80,8 @@
     die;
   }
   
-  $newpersondetail = new msIndividual($getsaveResult->aResultValue);
+  // Properly parse the MemberSuiteObject XML
+  $newpersondetail = $api->data->ConvertToObject($getsaveResult->aResultValue);
   
   echo 'Individual saved successfully.<br>';
   echo ' LocalId: '.$newpersondetail->LocalID.'<br> Name: '.$newpersondetail->Name.' <br> Age: '.$newpersondetail->Age.'<br>';
@@ -87,9 +89,6 @@
   echo 'Now run an update to it.<br>';
   $newpersondetail->DateOfBirth = "10/15/1989";
   $newpersondetail->FavoriteColors__c = array('Red', 'Green');
-  
-  // Need to clear this out as it is currently improperly formatted
-  $newpersondetail->Addresses = '';
   
   $address = new Address();
   $address->Line1 = '222 Fake St.';
@@ -100,7 +99,6 @@
   $address->Country = 'US';
   
   $newpersondetail->Home_Address = $address;
-  
   
   // Save Data Now
   $getsaveResult = $api->Save($newpersondetail);

@@ -218,8 +218,6 @@ class Concierge{
  		  if($key == 'ClassType') {
 	 		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
 		 	  break;
-		  } else if ($key == 'CreatedDate' || $key == 'LastModifiedDate'){
-        // Just skipping these since they are system and dateTime is not handled easily
 		  } else if (is_array($value)){
         $arrData = '';
 			  if (key($value) === 'RecordType'){
@@ -255,12 +253,18 @@ class Concierge{
 			    $objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
         }
 		  } else {
+			  
         $objecttype.= '<mem:KeyValueOfstringanyType>
           <mem:Key>'.$key.'</mem:Key><mem:Value ';
 		    if(strlen($value) > 0) {
-			    $objecttype.= 'i:type="a:string"';
+			    if ($key == 'CreatedDate' || $key == 'LastModifiedDate'){
+					$objecttype.= 'i:type="a:dateTime"';
+				}
+				else {
+					$objecttype.= 'i:type="a:string"';
+				}
 		    }
-		    else {
+			else {
 			    $objecttype.= 'i:nil="true"';
 		    }
 		    $objecttype.= '>'.$value.'</mem:Value>
