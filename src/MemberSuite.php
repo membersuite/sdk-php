@@ -4105,6 +4105,16 @@ class MemberSuite{
     return $response;
   }
   
+  public function GetPriorityConfiguration($entityID){
+   
+   $response = $this->order->GetPriorityConfiguration($this->accesskeyId,
+                                     $this->associationId,
+                                     $this->secretaccessId,
+                                     $entityID
+                                     );
+    return $response;
+  }
+  
   public function FromClassMetadata($resultobject)
   {
     $metadataarray = $this->data->FromClassMetadata($resultobject);

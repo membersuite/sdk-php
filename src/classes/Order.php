@@ -13,6 +13,32 @@ class Order extends Concierge{
     $this->api = new Concierge();
   }
   
+  public function GetPriorityConfiguration($accesskey,$associationid,$secreteaccessid,$entityID){
+    // Get file content
+     $filecontent = $this->api->GetFormat();
+     if($filecontent=='Error')
+     {
+      $errormsg = 'API Request can not be generated';
+      return false;
+     }
+     // Create API Request Headers
+     $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='GetPriorityConfiguration',$accesskey,$associationid,$secreteaccessid);
+     
+     // Construct Body
+      $body = '<s:Body>
+                    <GetPriorityConfiguration xmlns="http://membersuite.com/contracts">
+                    <entityID>'.$entityID.'</entityID>
+                    </GetPriorityConfiguration>
+                    </s:Body>
+                    ';
+    
+    $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
+	
+    // Create Response
+    $response = $this->api->SendSoapRequest($apirequest,$method='GetPriorityConfiguration');
+    return $this->api->createobject($response,'GetPriorityConfiguration'); 
+  }
+  
   // Get File Cabinet Request
   public function VoidOrderRequest($accesskey,$associationid,$secreteaccessid,$orderID){
     
@@ -81,7 +107,7 @@ class Order extends Concierge{
      }
      // Create API Request Headers
      $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='CheckLongRunningTaskStatus',$accesskey,$associationid,$secreteaccessid);
-     
+     	 
      // Construct Body
       $body = '<s:Body>
                     <CheckLongRunningTaskStatus xmlns="http://membersuite.com/contracts">
@@ -393,10 +419,10 @@ class Order extends Concierge{
                     </ProcessOrder>
                     </s:Body>
                     ';
-    
+					
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
-    
+    //echo($apirequest);
     $response = $this->api->SendSoapRequest($apirequest,$method='ProcessOrder');
     return $this->api->createobject($response,'ProcessOrder'); 
   }

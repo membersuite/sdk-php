@@ -59,6 +59,7 @@ class Concierge{
            "SOAPAction:http://membersuite.com/contracts/IConciergeAPIService/$method",
            'Content-Type: text/xml; charset=utf-8',
           );
+	
     $curl->postdata = $requestapi;
     $result = $curl->init();
     return $result;
@@ -214,44 +215,48 @@ class Concierge{
       if(is_array($value) && sizeof($value) == 0) {
         $value = '';
       }
-
  		  if($key == 'ClassType') {
 	 		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
 		 	  break;
 		  } else if (is_array($value)){
-        $arrData = '';
+			  $arrData = '';
+			  
 			  if (key($value) === 'RecordType'){
 			 	  $arrData.='i:type="mem:'.current($value).'">';
 				  foreach ($value as $k => $v){
 					  if ($k !== 'RecordType'){
-              $arrData.='<mem:'.$k;
-              if (!is_array($v) && strlen($v) > 0)
-                $arrData.='>'.$v.'</mem:'.$k.'>';
-              else
-                $arrData.=' i:nil="true" />';
-            }
+						  $arrData.='<mem:'.$k;
+						  if (!is_array($v) && strlen($v) > 0)
+							$arrData.='>'.$v.'</mem:'.$k.'>';
+						  else
+							$arrData.=' i:nil="true" />';
+						}
 				  }
-		    } else if (!is_array(reset($value))){
-          // Simple array
-          $arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
-          foreach($value as $k=>$v){
-            if (!is_array($v)) {
-              $arrData.='<arr:string>'.$v.'</arr:string>';
-            }
-          }
-			  } else {
+			} else if (is_array(reset($value)) && key(reset($value)) != 'ClassType'){
+				// Simple array
+				$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
+				foreach($value as $k=>$v){
+					if (!is_array($v)) {
+					$arrData.='<arr:string>'.$v.'</arr:string>';
+					}
+				}
+			} else {
 				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
-				  foreach ($value as $k => $v) {
-					  if (!is_array($v) && !is_object($v)){
-	 					  $arrData.='<mem:Key>'.$k.'</mem:Key><mem:Value i:type="a:string">'.$v.'</mem:Value>';
-	 				  } else if ($v != null) {
-						  $arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($v).'</mem:MemberSuiteObject>';
+				  if (key($value) === 'ClassType'){
+						$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
+				  } else {
+					  foreach ($value as $k => $v) {
+						  if (!is_array($v) && !is_object($v)){
+							  $arrData.='<mem:Key>'.$k.'</mem:Key><mem:Value i:type="a:string">'.$v.'</mem:Value>';
+						  } else if ($v != null) {
+							  $arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($v).'</mem:MemberSuiteObject>';
+						  }
 					  }
 				  }
 			  }
-        if (strlen($arrData) > 0) {
-			    $objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
-        }
+			if (strlen($arrData) > 0) {
+					$objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
+			}
 		  } else {
 			  
         $objecttype.= '<mem:KeyValueOfstringanyType>
@@ -320,23 +325,28 @@ class Concierge{
 					  $obj->{$key} = $this->build_msobject($value->bValue->bMemberSuiteObject);
 				  }
 			  } else {
-          // TODO - Custom Handler for Address. May need to add for other similar types.
-          if (strlen($key) > 8 && substr($key, -8) == '_Address' && !empty((array)$value->bValue)) {
-            $addr = new Address();
-					  foreach ($value->bValue as $k => $v){
-						  $addr->{ltrim($k,'b')} = $v;
-					  }
-            $obj->{$key} = $addr;
+				  // TODO - Custom Handler for Address. May need to add for other similar types.
+				  //if (strlen($key) > 8 && substr($key, -8) == '_Address' && !empty((array)$value->bValue)) {
+				  if (!empty((array)$value->bValue) && $this->isAddressArray((array)$value->bValue)) {
+					$addr = new Address();
+					foreach ($value->bValue as $k => $v){
+					  $addr->{ltrim($k,'b')} = $v;
+					}
+					$obj->{$key} = $addr;
 				  } else if (property_exists($value->bValue, 'cstring')) {
-				    $obj->{$key} = $value->bValue->cstring;
+					$obj->{$key} = $value->bValue->cstring;
 				  } else {
-				    $obj->{$key} = $value->bValue;
-          }
+					$obj->{$key} = $value->bValue;
+				  }
 			  }
 		  }
 		  return $obj;
 	  }
 	  throw new Exception("Could not convert to MemberSuite object.");
+  }
+  
+  protected function isAddressArray($arr) {
+	  return array_key_exists("bLine1",$arr) and array_key_exists("bCity",$arr) and array_key_exists("bState",$arr) and array_key_exists("bPostalCode",$arr);
   }
 }
 ?>
