@@ -96,7 +96,7 @@ class Order extends Concierge{
   }
   
   // Get File Cabinet Request
-  public function CheckLongRunningTaskStatusRequest($accesskey,$associationid,$secreteaccessid,$taskTracingID){
+  public function CheckLongRunningTaskStatusRequest($accesskey,$associationid,$secreteaccessid,$taskInfo){
     
     // Get file content
      $filecontent = $this->api->GetFormat();
@@ -111,7 +111,7 @@ class Order extends Concierge{
      // Construct Body
       $body = '<s:Body>
                     <CheckLongRunningTaskStatus xmlns="http://membersuite.com/contracts">
-                    <taskTracingID>'.$taskTracingID.'</taskTracingID>
+                    <info><mem:RunID>'.$taskInfo->bRunID.'</mem:RunID><mem:WorkflowID>'.$taskInfo->bWorkflowID.'</mem:WorkflowID></info>
                     </CheckLongRunningTaskStatus>
                     </s:Body>
                     ';
@@ -412,17 +412,16 @@ class Order extends Concierge{
      $objecttype = $this->build_msnode($objectarr);  
       $body = '<s:Body>
                     <ProcessOrder xmlns="http://membersuite.com/contracts">
-                    <msOrderToProcess>
+                    <msOrder>
                     '.$objecttype.'
-                    </msOrderToProcess>
-                    <antiDuplicationKey>'.$antiDuplicationKey.'</antiDuplicationKey>
+                    </msOrder>
                     </ProcessOrder>
                     </s:Body>
                     ';
 					
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
     // Create Response
-    //echo($apirequest);
+    
     $response = $this->api->SendSoapRequest($apirequest,$method='ProcessOrder');
     return $this->api->createobject($response,'ProcessOrder'); 
   }

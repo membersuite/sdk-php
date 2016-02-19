@@ -71,35 +71,38 @@
 		//	var_dump($finOrder->LineItems[$i]);
 		//}
     
-		$finOrder->PaymentMethod = 'CreditCard';
-		$finOrder->CreditCardNumber = '4111111111111111';
-		$finOrder->Status = 'Pending';
-		$finOrder->CCVCode = 123;
-		$finOrder->CreditCardExpirationDate = '01/23/2015';
-		$finOrder->NameOnCreditCard = 'test';
-		$finOrder->ProcessOrderEvenIfPaymentFails = 'false';
+		$finOrder->PaymentMethod = 'Cash';
 				
 		echo "Placing order...<br/>";
 	 	$response = $api->ProcessOrder($finOrder);
+		
 		if($response->aSuccess == 'true'){ 	
-			echo "Tracking token is: ".$response->aResultValue."<br/>";
+			echo "Tracking token is: ".$response->aResultValue->bRunID."<br/>";
+			echo "Workflow is: ".$response->aResultValue->bWorkflowID."<br/>";
 						
 			echo "Waiting for a response...<br/>";		
-			$result = null;			
+			$result = null;
+			$counter = 0;
 			do {
-				$status = $api->CheckLongRunningTaskStatus($response->aResultValue);					
-				$result = (array)$status->aResultValue;
-			} while (count($result) == 0);
+				$status = $api->CheckLongRunningTaskStatus($response->aResultValue);
+				$result = $status->aResultValue;
+				
+				echo $result->bStatus;
+				
+				if ($result->bStatus == 'Running') {
+					echo "...<br/>";
+					$counter += 1;
+					sleep(2);
+				}
+				else {
+					$counter = 999;
+				}
+			} while ($counter < 20);
 			
 			echo "<br/>";
 			
-			$result = $result['bFields']->bKeyValueOfstringanyType;			
-			foreach($result as $value){
-				if ($value->bKey == 'Description'){
-					echo $value->bValue."<br/>";
-					break;
-				}
-			}
+			
+			
 		} else {
 			var_dump($response);					
 		}		

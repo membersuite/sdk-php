@@ -23,13 +23,13 @@
  
   // run a WhoAmI to establish a session
   $response = $api->WhoAmI();
- 
+  
   if($response->aSuccess=='false')
   {
     echo ' Unable to login <br> '.$response->aErrors->bConciergeError->bMessage;
     die;
   }
- 
+  
   // now, we want to create a new individual
   // First, we need to get a description of the individual
   // The description will tell the client SDK how to "build" the object; in other words, what the fields are

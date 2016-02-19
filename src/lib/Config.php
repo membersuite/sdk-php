@@ -14,7 +14,7 @@ class Config{
                               xmlns:b="http://schemas.datacontract.org/2004/07/MemberSuite.SDK.Searching">
                                 <s:Header>
                                   <Action></Action>
-                                  <To>https://api.membersuite.com</To>
+                                  <To>https://soap.membersuite.com</To>
                                   <ConciergeRequestHeader xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://membersuite.com/schemas">
                                     <SessionId i:nil="true" />
                                     <AccessKeyId></AccessKeyId>

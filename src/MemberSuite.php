@@ -2617,12 +2617,12 @@ class MemberSuite{
         /// <param name="taskTracingID">The task tracing ID.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-  public function CheckLongRunningTaskStatus($taskTracingID){
+  public function CheckLongRunningTaskStatus($taskInfo){
    
    $response = $this->order->CheckLongRunningTaskStatusRequest($this->accesskeyId,
                                      $this->associationId,
                                      $this->secretaccessId,
-                                     $taskTracingID
+                                     $taskInfo
                                      );
     return $response;
   }

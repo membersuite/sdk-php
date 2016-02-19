@@ -54,7 +54,7 @@ class Concierge{
   protected function SendSoapRequest($requestapi,$method){
     // Calling cURL class
     $curl = new Curl();
-    $curl->url = 'https://api.membersuite.com';
+    $curl->url = 'https://soap.membersuite.com';
     $curl->header = array (
            "SOAPAction:http://membersuite.com/contracts/IConciergeAPIService/$method",
            'Content-Type: text/xml; charset=utf-8',
