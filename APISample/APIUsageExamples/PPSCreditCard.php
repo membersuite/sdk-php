@@ -6,10 +6,10 @@
 
   $api = new MemberSuite();
   
-  $CurrentEntityId = '3afa700f-0006-c0bf-07e4-0b3a08c0586b';
+  $CurrentEntityId = '2537d8c3-0006-ceb0-8352-0b371e6de173';
   
   $api->accesskeyId = Userconfig::read('AccessKeyId');
-  $api->associationId = '3afa700f-0004-c620-1dca-0b3a07791c76'; //Userconfig::read('AssociationId');
+  $api->associationId = Userconfig::read('AssociationId');
   $api->secretaccessId = Userconfig::read('SecretAccessKey');
   
   $response = $api->GetPriorityConfiguration($CurrentEntityId);
@@ -25,7 +25,12 @@
 <head>
 	<title>PPS Test</title>
     <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="js/membersuite.payment-processor.min.js"></script>
+    <!--script type="text/javascript" src="js/membersuite.payment-processor.min.js"></script-->
+    <script type="text/javascript" src="js/membersuite.payment-processor.API.js"></script>
+    <script type="text/javascript" src="js/priorityPayment.logger.js"></script>
+    <script type="text/javascript" src="js/cardType-util.js"></script>
+    <script type="text/javascript" src="js/priorityPayment.ajaxAPI.js"></script>
+    <script type="text/javascript" src="js/membersuite.payment-processor-1.0.js"></script>
 </head>
 <body>
     <form method="post" action="PPSCreditCard.php">
@@ -93,6 +98,11 @@
             var $expiryYearElem = $('.mypYear');
             var id = '<?php echo $CurrentEntityId?>';
 
+            config["Address1"] = '123 Fake St.';
+            config["City"] = 'Nowhere';
+            config["State"] = 'GA';
+            config["Zip"] = '12345';
+			
             var parms = {
                 ppConfig: config,
                 msConfig: {

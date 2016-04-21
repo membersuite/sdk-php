@@ -67,6 +67,11 @@
  		echo "Positive response!<br/>"; 	
 	 	$finOrder = $api->data->ConvertToObject($response->aResultValue->bFinalizedOrder);
 	 	
+		// Need to ensure that the LineItems is an actual array
+		if (!is_array($finOrder->LineItems)) {
+			$finOrder->LineItems = array($finOrder->LineItems);
+		}
+		
 	 	//for($i = 0; $i < count($finOrder->LineItems); $i++) {
 		//	var_dump($finOrder->LineItems[$i]);
 		//}

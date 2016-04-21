@@ -232,15 +232,7 @@ class Concierge{
 							$arrData.=' i:nil="true" />';
 						}
 				  }
-			} else if (is_array(reset($value)) && key(reset($value)) != 'ClassType'){
-				// Simple array
-				$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
-				foreach($value as $k=>$v){
-					if (!is_array($v)) {
-					$arrData.='<arr:string>'.$v.'</arr:string>';
-					}
-				}
-			} else {
+			} else if (is_array(reset($value)) && key(reset($value)) == 'ClassType'){
 				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
 				  if (key($value) === 'ClassType'){
 						$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
@@ -253,7 +245,15 @@ class Concierge{
 						  }
 					  }
 				  }
-			  }
+			} else {
+				// Simple array
+				$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
+				foreach($value as $k=>$v){
+					if (!is_array($v)) {
+					$arrData.='<arr:string>'.$v.'</arr:string>';
+					}
+				}
+			}
 			if (strlen($arrData) > 0) {
 					$objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
 			}
