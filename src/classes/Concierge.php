@@ -262,7 +262,7 @@ class Concierge{
         $objecttype.= '<mem:KeyValueOfstringanyType>
           <mem:Key>'.$key.'</mem:Key><mem:Value ';
 		    if(strlen($value) > 0) {
-			    if ($key == 'CreatedDate' || $key == 'LastModifiedDate'){
+			    if (preg_match("/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/", $value)){
 					$objecttype.= 'i:type="a:dateTime"';
 				}
 				else {
