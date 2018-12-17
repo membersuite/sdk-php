@@ -2,19 +2,12 @@
 session_start();
 ob_start();
 include_once($_SERVER['DOCUMENT_ROOT'].'/APISample/phpsdk.phar');
-
 include_once('config.php');
-
 $api = new MemberSuite();
-
 $api->accesskeyId = Userconfig::read('AccessKeyId');
-
 $api->associationId = Userconfig::read('AssociationId');
-
 $api->secretaccessId = Userconfig::read('SecretAccessKey');
-
 $response = $api->WhoAmI();
-
  if($response->aSuccess=='false')
   {
     echo $response->aErrors->bConciergeError->bMessage;
@@ -51,11 +44,9 @@ $response = $api->WhoAmI();
 </body>   
 </html>
 <?php
-
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
 	//Logintoportal
-
 	$portalusername = $_POST['portalusername'];
 	$portalpassword = $_POST['portalpassword'];
 	// Varify username and password
@@ -68,7 +59,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 	}
 	$getresult = new GetSafeValue($response->aResultValue->aPortalEntity);
 	$entityId = $getresult->ID;	
-
 	$Query = "select TOP 1 FirstName, LocalID, LastName,
 	Membership.Type.Name,Membership.PrimaryChapter.Name, Membership.ExpirationDate,
 	Membership.ReceivesMemberBenefits from Individual where ID = '".$entityId."' order by LastName";
@@ -78,16 +68,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 	
 	$response = $api->ExecuteMSQL($Query,$Startrecord,$Maxrecord);			
 	$result = $response->aResultValue->aSearchResult->aTable->diffgrdiffgram->NewDataSet;			
-	if($result->Table) {
-		foreach($result->Table as $row) {
-			echo "LocalID : ".$row->LocalID."<br/>";
-			echo "FirstName : ".$row->FirstName."<br/>";
-			echo "LastName : ".$row->LastName."<br/>";
-			echo "Member? : ".$row->Membership.ReceivesMemberBenefits."<br/>";
-			echo "Member Type : ".$row->Membership.Type.Name."<br/>";
-			echo "Chapter : ".$row->Membership.PrimaryChapter.Name."<br/>";
-			echo "Expiration Date : ".$row->Membership.ExpirationDate."<br/>";
-		}
+	if(!empty($result) && $result->Table) {
+		echo "LocalID : ".$result->Table->LocalID."<br/>";
+		echo "FirstName : ".$result->Table->FirstName."<br/>";
+		echo "LastName : ".$result->Table->LastName."<br/>";
+		echo "Member? : ".$result->Table->{"Membership.ReceivesMemberBenefits"}."<br/>";
+		echo "Member Type : ".$result->Table->{"Membership.Type.Name"}."<br/>";
+		echo "Chapter : ".$result->Table->{"Membership.PrimaryChapter.Name"}."<br/>";
+		echo "Expiration Date : ".$result->Table->{"Membership.ExpirationDate"}."<br/>";	
 	}
 	else
 	{
@@ -95,6 +83,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 		die;
 	}
 	 
-
 }
 ?>
