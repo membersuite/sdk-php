@@ -221,6 +221,8 @@ class Concierge{
 		  } else if (is_array($value)){
 			  $arrData = '';
 			  
+			  reset($value); //Reset array cursor to beginning of array
+			  
 			  if (key($value) === 'RecordType'){
 			 	  $arrData.='i:type="mem:'.current($value).'">';
 				  foreach ($value as $k => $v){
@@ -232,7 +234,8 @@ class Concierge{
 							$arrData.=' i:nil="true" />';
 						}
 				  }
-			} else if (is_array(reset($value)) && key(reset($value)) == 'ClassType'){
+			// Check key of first element in $value array to see if $value is an array of MS Objects
+			} else if (key($value) == 'ClassType'){
 				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
 				  if (key($value) === 'ClassType'){
 						$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
