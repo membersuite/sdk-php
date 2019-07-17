@@ -245,7 +245,7 @@ class Concierge{
 			// Original was using key(reset($value)) == 'ClassType' as condition
 			// reset(array) returns the first value of the array
 			// key(array) expects an array as a parameter, not a value
-			// Comparison Operator '===' is used due to PHP Type Juggling, string with no numberic values converts to int '0'
+			// Comparison Operator '===' is used due to PHP Type Juggling, string with no numeric values converts to int '0'
 			else if (key($value) === 'ClassType'){
 			// key(reset(array)) was never "ClassType", so MS Object arrays failed always
 				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
