@@ -61,6 +61,9 @@ class Concierge{
           );
 	
     $curl->postdata = $requestapi;
+	// echo '<pre>';
+	// print_r($curl);
+	// echo '</pre>';
     $result = $curl->init();
     return $result;
   }
@@ -215,27 +218,36 @@ class Concierge{
       if(is_array($value) && sizeof($value) == 0) {
         $value = '';
       }
- 		  if($key == 'ClassType') {
-	 		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
-		 	  break;
-		  } else if (is_array($value)){
-			  $arrData = '';
-			  
-			  reset($value); //Reset array cursor to beginning of array
-			  
-			  if (key($value) === 'RecordType'){
-			 	  $arrData.='i:type="mem:'.current($value).'">';
-				  foreach ($value as $k => $v){
-					  if ($k !== 'RecordType'){
-						  $arrData.='<mem:'.$k;
-						  if (!is_array($v) && strlen($v) > 0)
-							$arrData.='>'.$v.'</mem:'.$k.'>';
-						  else
-							$arrData.=' i:nil="true" />';
-						}
-				  }
-			// Check key of first element in $value array to see if $value is an array of MS Objects
-			} else if (key($value) == 'ClassType'){
+	  if($key == 'ClassType') {
+		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
+		  break;
+	  } 
+	  else if (is_array($value)){
+		  $arrData = '';
+  		  
+		  // Fix for array of MS Objects check not being handled properly
+		  reset($value);
+		  
+		  if (key($value) === 'RecordType')
+		  {
+			  $arrData.='i:type="mem:'.current($value).'">';
+			  foreach ($value as $k => $v){
+				  if ($k !== 'RecordType'){
+					  $arrData.='<mem:'.$k;
+					  if (!is_array($v) && strlen($v) > 0)
+						$arrData.='>'.$v.'</mem:'.$k.'>';
+					  else
+						$arrData.=' i:nil="true" />';
+					}
+			  }
+			} 
+			// Fix for array of MS Objects not being handled properly
+			// Original was using key(reset($value)) == 'ClassType' as condition
+			// reset(array) returns the first value of the array
+			// key(array) expects an array as a parameter, not a value
+			// Comparison Operator '===' is used due to PHP Type Juggling, string with no numberic values converts to int '0'
+			else if (key($value) === 'ClassType'){
+			// key(reset(array)) was never "ClassType", so MS Object arrays failed always
 				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
 				  if (key($value) === 'ClassType'){
 						$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
@@ -248,7 +260,8 @@ class Concierge{
 						  }
 					  }
 				  }
-			} else {
+			} 
+			else {
 				// Simple array
 				$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
 				foreach($value as $k=>$v){
@@ -257,26 +270,28 @@ class Concierge{
 					}
 				}
 			}
+			
 			if (strlen($arrData) > 0) {
 					$objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
 			}
-		  } else {
-			  
-        $objecttype.= '<mem:KeyValueOfstringanyType>
-          <mem:Key>'.$key.'</mem:Key><mem:Value ';
-		    if(strlen($value) > 0) {
-			    if (preg_match("/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/", $value)){
-					$objecttype.= 'i:type="a:dateTime"';
+			
+		  } 
+		  else {	  
+			$objecttype.= '<mem:KeyValueOfstringanyType>
+			  <mem:Key>'.$key.'</mem:Key><mem:Value ';
+				if(strlen($value) > 0) {
+					if (preg_match("/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/", $value)){
+						$objecttype.= 'i:type="a:dateTime"';
+					}
+					else {
+						$objecttype.= 'i:type="a:string"';
+					}
 				}
 				else {
-					$objecttype.= 'i:type="a:string"';
+					$objecttype.= 'i:nil="true"';
 				}
-		    }
-			else {
-			    $objecttype.= 'i:nil="true"';
-		    }
-		    $objecttype.= '>'.$value.'</mem:Value>
-          </mem:KeyValueOfstringanyType>';
+				$objecttype.= '>'.$value.'</mem:Value>
+			  </mem:KeyValueOfstringanyType>';
 		  }
 	  }
 	  return $objecttype;
