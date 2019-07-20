@@ -213,54 +213,107 @@ class Concierge{
 
   protected function build_msnode($objectarr){
     $objecttype = '';
+	
+	// While(each()) used in order to remember cursory position within array
+	// Also sets $key and $value for current values at cursor position in array
     while(list($key, $value) = each($objectarr)) {
-      // First do some quick validation
-      if(is_array($value) && sizeof($value) == 0) {
-        $value = '';
-      }
-	  if($key == 'ClassType') {
+      
+		// First do some quick validation
+		if(is_array($value) && sizeof($value) == 0) {
+		$value = '';
+		}
+	  
+		// Check for ClassType key that is always located in first element in array
+		// If true, this is the first loop so we set ClassType XML tags and recurse back into the function with cursor positioned on second element
+		if(strval($key) === 'ClassType') {
 		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
 		  break;
-	  } 
-	  else if (is_array($value)){
-		  $arrData = '';
+		} 
+		// If false, not the first loop so start generating the XML based on the type of value at array cursor position
+		else if (is_array($value)){
+			$arrData = '';
   		  
-		  // Fix for array of MS Objects check not being handled properly
-		  reset($value);
+			// Fix for array of MS Objects check not being handled properly
+			reset($value);
 		  
-		  if (key($value) === 'RecordType')
-		  {
-			  $arrData.='i:type="mem:'.current($value).'">';
-			  foreach ($value as $k => $v){
-				  if ($k !== 'RecordType'){
-					  $arrData.='<mem:'.$k;
-					  if (!is_array($v) && strlen($v) > 0)
-						$arrData.='>'.$v.'</mem:'.$k.'>';
-					  else
-						$arrData.=' i:nil="true" />';
+			// Check for RecordType key
+			if (key($value) === 'RecordType')
+			{
+				$arrData.='i:type="mem:'.current($value).'">';
+				foreach ($value as $k => $v){
+					if ($k !== 'RecordType'){
+						$arrData.='<mem:'.$k;
+						if (!is_array($v) && strlen($v) > 0)
+							$arrData.='>'.$v.'</mem:'.$k.'>';
+						else
+							$arrData.=' i:nil="true" />';
 					}
-			  }
+				}
 			} 
-			// Fix for array of MS Objects not being handled properly
 			// Original was using key(reset($value)) == 'ClassType' as condition
 			// reset(array) returns the first value of the array
 			// key(array) expects an array as a parameter, not a value
-			// Comparison Operator '===' is used due to PHP Type Juggling, string with no numeric values converts to int '0'
-			else if (key($value) === 'ClassType'){
-			// key(reset(array)) was never "ClassType", so MS Object arrays failed always
-				  $arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
-				  if (key($value) === 'ClassType'){
-						$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
-				  } else {
-					  foreach ($value as $k => $v) {
-						  if (!is_array($v) && !is_object($v)){
-							  $arrData.='<mem:Key>'.$k.'</mem:Key><mem:Value i:type="a:string">'.$v.'</mem:Value>';
-						  } else if ($v != null) {
-							  $arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($v).'</mem:MemberSuiteObject>';
-						  }
-					  }
-				  }
-			} 
+			// key(reset(array)) was never "ClassType", so MS Object arrays always returned false
+			// Comparison Operator '===' is used due to PHP Type Juggling, string with no numeric values converts to int '0', causing false positives
+			else if (strval(key($value)) === 'ClassType'){
+				// This condition handles MS Objects arrays with only one element
+				// Fields of MS Object arrays that only have one element just return the object, no array
+				$arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
+				if (key($value) === 'ClassType'){
+					$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($value).'</mem:MemberSuiteObject>';
+				} else {
+					foreach ($value as $k => $v) {
+						if (!is_array($v) && !is_object($v)){
+							$arrData.='<mem:Key>'.$k.'</mem:Key><mem:Value i:type="a:string">'.$v.'</mem:Value>';
+						} else if ($v != null) {
+							$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($v).'</mem:MemberSuiteObject>';
+						}
+					}
+				}
+			}
+			// Fix for formatting of multiple elements within an array having numeric keys [0=>e0, 1=>e1, 2=>e2]
+			else if (is_numeric(key($value))){
+				// Check to see if this is an MS Object array or Simple String Array
+				// Necessary so that arrData does not have duplicate data type tags
+				foreach ($value as $innerkey => $innervalue){
+					if (strval(key($innervalue)) === 'ClassType'){
+						$arrData.='i:type="mem:ArrayOfMemberSuiteObject">';
+						// Only needs to check the first Key for ClassType, so short circuit
+						break;
+					}
+					else{
+						$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
+						// Only needs to check the first Key for ClassType, so short circuit
+						break;
+					}
+				}					
+				
+				// Begin looping through the array in order to generate XML
+				foreach ($value as $innerkey => $innervalue){
+					// Check to see if it's an MS Object array 
+					if (strval(key($innervalue)) === 'ClassType'){
+						// Condition check throws a warning if $innervalue is not an array, but it's okay
+						// MS Object array with numeric keys
+						if (strval(key($innervalue)) === 'ClassType'){
+							$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($innervalue).'</mem:MemberSuiteObject>';
+						} else {
+							foreach ($innervalue as $k => $v) {
+								if (!is_array($v) && !is_object($v)){
+									$arrData.='<mem:Key>'.$k.'</mem:Key><mem:Value i:type="a:string">'.$v.'</mem:Value>';
+								} else if ($v != null) {
+									$arrData.='<mem:MemberSuiteObject>'.$this->build_msnode($v).'</mem:MemberSuiteObject>';
+								}
+							}
+						}
+					}
+					else {
+						// Simple string array with numeric keys
+						if (!is_array($innervalue)) {
+						$arrData.='<arr:string>'.$innervalue.'</arr:string>';
+						}
+					}
+				}
+			}
 			else {
 				// Simple array
 				$arrData.= 'i:type="arr:ArrayOfstring" xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">';
@@ -275,10 +328,10 @@ class Concierge{
 					$objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
 			}
 			
-		  } 
-		  else {	  
-			$objecttype.= '<mem:KeyValueOfstringanyType>
-			  <mem:Key>'.$key.'</mem:Key><mem:Value ';
+		} 
+		// 
+		else {	  
+			$objecttype.= '<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value ';
 				if(strlen($value) > 0) {
 					if (preg_match("/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/", $value)){
 						$objecttype.= 'i:type="a:dateTime"';
@@ -290,12 +343,12 @@ class Concierge{
 				else {
 					$objecttype.= 'i:nil="true"';
 				}
-				$objecttype.= '>'.$value.'</mem:Value>
-			  </mem:KeyValueOfstringanyType>';
-		  }
-	  }
-	  return $objecttype;
-  }
+			$objecttype.= '>'.$value.'</mem:Value></mem:KeyValueOfstringanyType>';
+		}
+	}
+	return str_replace("&","&amp",$objecttype);
+}
+	  
 
   protected function str_replace_last( $search , $replace , $str ) {
     if( ( $pos = strrpos( $str , $search ) ) !== false ) {
