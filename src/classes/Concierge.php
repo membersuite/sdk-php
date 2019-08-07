@@ -346,7 +346,7 @@ class Concierge{
 			$objecttype.= '>'.$value.'</mem:Value></mem:KeyValueOfstringanyType>';
 		}
 	}
-	return str_replace("&","&amp",$objecttype);
+	return $objecttype;
 }
 	  
 

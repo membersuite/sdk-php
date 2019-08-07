@@ -52,21 +52,24 @@ class Data extends Concierge{
     $apirequestheaders = $this->api->ConstructSoapHeaders($filecontent,$method='Save',$accesskey,$associationid,$secreteaccessid);
     $objectarr = $this->object_to_array($object);
     $objecttype = $this->build_msnode($objectarr);  
-    
+	
     $body = '<s:Body>
-                    <Save xmlns="http://membersuite.com/contracts">
-                    <objectToSave>
-                    '.$objecttype.'
-                    </objectToSave>
-                    </Save>
-                    </s:Body>
-                    ';
+				<Save xmlns="http://membersuite.com/contracts">
+				<objectToSave>
+				'.$objecttype.'
+				</objectToSave>
+				</Save>
+			</s:Body>';
+					
     // Replace strings
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
-    
+	
     if ($this->debug) echo 'SAVE REQUEST<br>'.$apirequest.'<br><br>';
+	
+	// Clean up ampersands before sending to API server
+	$apirequest = str_replace("&","&amp;",$apirequest);
     
-    // Create Response
+	// Create Response
     $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
    
     if ($this->debug) echo 'SAVE RESULT<br>'.$getsaveResult.'<br><br>';
