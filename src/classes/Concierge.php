@@ -61,7 +61,7 @@ class Concierge{
           );
 		  
 	// Clean up ampersands before sending to API server 
-	$apirequest = str_replace("&","&amp;",$apirequest);
+	$requestapi = str_replace("&","&amp;",$requestapi);
 	
     $curl->postdata = $requestapi;
 	// echo '<pre>';
