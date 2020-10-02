@@ -59,6 +59,9 @@ class Concierge{
            "SOAPAction:http://membersuite.com/contracts/IConciergeAPIService/$method",
            'Content-Type: text/xml; charset=utf-8',
           );
+		  
+	// Clean up ampersands before sending to API server 
+	$apirequest = str_replace("&","&amp;",$apirequest);
 	
     $curl->postdata = $requestapi;
 	// echo '<pre>';

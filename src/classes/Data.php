@@ -63,11 +63,6 @@ class Data extends Concierge{
 					
     // Replace strings
     $apirequest = str_replace('<s:Body></s:Body>',$body,$apirequestheaders);
-	
-    if ($this->debug) echo 'SAVE REQUEST<br>'.$apirequest.'<br><br>';
-	
-	// Clean up ampersands before sending to API server
-	$apirequest = str_replace("&","&amp;",$apirequest);
     
 	// Create Response
     $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
