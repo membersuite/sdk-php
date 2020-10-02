@@ -66,8 +66,6 @@ class Data extends Concierge{
     
 	// Create Response
     $getsaveResult = $this->api->SendSoapRequest($apirequest,$method='Save');
-   
-    if ($this->debug) echo 'SAVE RESULT<br>'.$getsaveResult.'<br><br>';
     
     return $this->api->createobject($getsaveResult,'Save'); 
   }
