@@ -75,7 +75,7 @@ public function __construct(){
            <ExecuteSearch xmlns="http://membersuite.com/contracts" >
            <searchToExecute>'.$search.'</searchToExecute>
            <startRecord>'.$startrecord.'</startRecord>
-           <MaximumNumOfRecord>'.$MaximumNumOfRecord.'</MaximumNumOfRecord>
+           <maximumNumberOfRecordsToReturn>'.$MaximumNumOfRecord.'</maximumNumberOfRecordsToReturn>
            </ExecuteSearch>
     </s:Body>';
     
