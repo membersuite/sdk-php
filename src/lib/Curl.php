@@ -17,6 +17,7 @@ class Curl{
 		
 		$certPath = $_SERVER['DOCUMENT_ROOT'].'/ms_sdk/lib/mozilla.pem';
 		curl_setopt($curl, CURLOPT_CAINFO, $certPath);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		
 		// setting up the cURL URL
 		$this->curlurl($curl);
