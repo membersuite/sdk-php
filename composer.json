@@ -1,0 +1,19 @@
+{
+    "name": "membersuite/sdk-php",
+    "description": "MemberSuite PHP SDK",
+    "license": "proprietary",
+    "type": "library",
+    "scripts": {
+        "sniffer:php5": "phpcs -p ./src --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 5.0-",
+        "sniffer:php55": "phpcs -p ./src --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 5.5-",
+        "sniffer:php7": "phpcs -p ./src --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 7.0-",
+        "sniffer:php8": "phpcs -p ./src --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0-"
+    },
+    "require": {
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpcompatibility/phpcompatibility-wp": "^2.1"
+    }
+}
