@@ -59,10 +59,10 @@ class Concierge{
            "SOAPAction:http://membersuite.com/contracts/IConciergeAPIService/$method",
            'Content-Type: text/xml; charset=utf-8',
           );
-		  
-	// Clean up ampersands before sending to API server 
+
+	// Clean up ampersands before sending to API server
 	$requestapi = str_replace("&","&amp;",$requestapi);
-	
+
     $curl->postdata = $requestapi;
 	// echo '<pre>';
 	// print_r($curl);
@@ -216,29 +216,28 @@ class Concierge{
 
   protected function build_msnode($objectarr){
     $objecttype = '';
-	
+
 	// While(each()) used in order to remember cursory position within array
 	// Also sets $key and $value for current values at cursor position in array
-    while(list($key, $value) = each($objectarr)) {
-      
+    while(list($key, $value) = foreach($objectarr)) {
+
 		// First do some quick validation
 		if(is_array($value) && sizeof($value) == 0) {
 		$value = '';
 		}
-	  
+
 		// Check for ClassType key that is always located in first element in array
 		// If true, this is the first loop so we set ClassType XML tags and recurse back into the function with cursor positioned on second element
 		if(strval($key) === 'ClassType') {
 		  $objecttype.= '<mem:ClassType>'.$value.'</mem:ClassType><mem:Fields>'.$this->build_msnode($objectarr).'</mem:Fields>';
-		  break;
-		} 
+		}
 		// If false, not the first loop so start generating the XML based on the type of value at array cursor position
 		else if (is_array($value)){
 			$arrData = '';
-  		  
+
 			// Fix for array of MS Objects check not being handled properly
 			reset($value);
-		  
+
 			// Check for RecordType key
 			if (key($value) === 'RecordType')
 			{
@@ -252,7 +251,7 @@ class Concierge{
 							$arrData.=' i:nil="true" />';
 					}
 				}
-			} 
+			}
 			// Original was using key(reset($value)) == 'ClassType' as condition
 			// reset(array) returns the first value of the array
 			// key(array) expects an array as a parameter, not a value
@@ -289,11 +288,11 @@ class Concierge{
 						// Only needs to check the first Key for ClassType, so short circuit
 						break;
 					}
-				}					
-				
+				}
+
 				// Begin looping through the array in order to generate XML
 				foreach ($value as $innerkey => $innervalue){
-					// Check to see if it's an MS Object array 
+					// Check to see if it's an MS Object array
 					if (strval(key($innervalue)) === 'ClassType'){
 						// Condition check throws a warning if $innervalue is not an array, but it's okay
 						// MS Object array with numeric keys
@@ -326,14 +325,14 @@ class Concierge{
 					}
 				}
 			}
-			
+
 			if (strlen($arrData) > 0) {
 					$objecttype.='<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value '.$arrData.'</mem:Value></mem:KeyValueOfstringanyType>';
 			}
-			
-		} 
-		// 
-		else {	  
+
+		}
+		//
+		else {
 			$objecttype.= '<mem:KeyValueOfstringanyType><mem:Key>'.$key.'</mem:Key><mem:Value ';
 				if(strlen($value) > 0) {
 					if (preg_match("/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/", $value)){
@@ -351,7 +350,7 @@ class Concierge{
 	}
 	return $objecttype;
 }
-	  
+
 
   protected function str_replace_last( $search , $replace , $str ) {
     if( ( $pos = strrpos( $str , $search ) ) !== false ) {
@@ -418,7 +417,7 @@ class Concierge{
 	  }
 	  throw new Exception("Could not convert to MemberSuite object.");
   }
-  
+
   protected function isAddressArray($arr) {
 	  return array_key_exists("bLine1",$arr) and array_key_exists("bCity",$arr) and array_key_exists("bState",$arr) and array_key_exists("bPostalCode",$arr);
   }
